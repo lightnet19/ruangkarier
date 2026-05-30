@@ -15,6 +15,10 @@ export async function POST(request: Request) {
     const dummyStudents: StudentSession[] = [
       {
         id: "mock_ahmad_fauzi",
+        nis: "2025001",
+        passcode: "siswa123",
+        name: "Ahmad Fauzi",
+        className: "XII-IPS 1",
         createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
         profile: {
           name: "Ahmad Fauzi",
@@ -79,6 +83,10 @@ export async function POST(request: Request) {
       },
       {
         id: "mock_siti_aminah",
+        nis: "2025002",
+        passcode: "siswa123",
+        name: "Siti Aminah",
+        className: "XII-MIPA 2",
         createdAt: new Date(Date.now() - 5 * 3600000).toISOString(),
         profile: {
           name: "Siti Aminah",
@@ -143,6 +151,10 @@ export async function POST(request: Request) {
       },
       {
         id: "mock_budi_pratama",
+        nis: "2025003",
+        passcode: "siswa123",
+        name: "Budi Pratama",
+        className: "XI-MIPA 1",
         createdAt: new Date(Date.now() - 24 * 3600000).toISOString(),
         profile: {
           name: "Budi Pratama",

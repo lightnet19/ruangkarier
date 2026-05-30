@@ -6,6 +6,25 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Penyelarasan Kredensial Uji Coba & Peningkatan UX Login (Widget Demo Autofill)
+
+- **Aktivitas:** Menyempurnakan pengalaman pengujian (demo experience) RuangKarier dengan menormalisasi seluruh kredensial siswa demo, memperbarui API seeder, merancang widget login autofill premium, serta memperbarui dokumentasi proyek.
+- **Implementasi & Perubahan:**
+  1. **Normalisasi Database (`data/db.json`):**
+     - Mengubah dan melengkapi seluruh 6 data siswa simulasi dengan nomor induk siswa (`nis`) berurutan (`2025001` hingga `2025006`) dan passcode standar `siswa123` untuk kemudahan pengujian.
+  2. **Pembaruan Endpoint Seeder BK (`src/app/api/counselor/seed/route.ts`):**
+     - Menyesuaikan fungsi penyuntik data dummy agar akun Ahmad Fauzi, Siti Aminah, dan Budi Pratama selalu di-seed lengkap dengan field `nis` dan `passcode` yang konsisten.
+  3. **Widget Demo Autofill Premium (`src/app/login/page.tsx`):**
+     - Mengembangkan widget panel interaktif **"Akun Uji Coba / Demo"** dengan estetika glassmorphism modern di bagian bawah kartu login.
+     - Menyediakan tab terpisah untuk **Siswa** (dengan informasi nama, NIS, tingkat kecemasan, dan tombol cepat autofill), **Konselor** (passcode `konselor123`), dan **Admin** (passcode `admin123`).
+  4. **Pembaruan Dokumentasi (`README.md`):**
+     - Menambahkan tabel kredensial akun uji coba lengkap serta petunjuk pemakaian widget autofill demi memudahkan penguji/evaluator BK.
+- **Hasil Verifikasi:**
+  - Fungsi klik *autofill* mengisi input dengan tepat dan berhasil masuk ke dasbor peran masing-masing tanpa ada eror rendering.
+  - Seluruh alur kerja telah diverifikasi dan siap untuk langkah pengujian fungsionalitas komprehensif.
+
+---
+
 ### [2026-05-30] - Analisis Kompetitor & Perencanaan Pengembangan Lanjutan (Fase 7–10)
 
 - **Aktivitas:** Eksplorasi mendalam 8 platform karier siswa Indonesia (AkuPintar, Quipper Campus, BTW Edutech, BK Jatidiri, Karierku, Satu Persen, Zenius, Kelas.com) untuk menyusun perencanaan pengembangan strategis RuangKarier.

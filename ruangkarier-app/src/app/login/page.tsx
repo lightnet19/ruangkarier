@@ -58,6 +58,25 @@ function LoginContent() {
     }
   }, [searchParams]);
 
+  const handleAutofillStudent = (selectedNis: string, selectedPass: string) => {
+    setNis(selectedNis);
+    setStudentPasscode(selectedPass);
+    setError('');
+    setSuccessMsg('');
+  };
+
+  const handleAutofillCounselor = (selectedPass: string) => {
+    setCounselorPasscode(selectedPass);
+    setError('');
+    setSuccessMsg('');
+  };
+
+  const handleAutofillAdmin = (selectedPass: string) => {
+    setAdminPasscode(selectedPass);
+    setError('');
+    setSuccessMsg('');
+  };
+
   const handleStudentLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -428,6 +447,99 @@ function LoginContent() {
               ← Kembali ke Beranda
             </Link>
           </div>
+        </div>
+
+        {/* Demo Accounts Panel */}
+        <div className="bg-slate-900/60 backdrop-blur-md border border-white/5 rounded-3xl p-6 mt-6 shadow-xl relative overflow-hidden transition-all">
+          <div className="absolute top-0 right-0 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-white/5">
+            🔑 Mode Demo
+          </div>
+          <h3 className="text-sm font-bold text-white mb-1.5 flex items-center gap-1.5">
+            <span>✨</span> Akun Uji Coba (Demo)
+          </h3>
+          <p className="text-xs text-slate-400 mb-4">
+            Klik akun simulasi di bawah ini untuk mengisi kredensial secara otomatis:
+          </p>
+
+          {activeTab === 'student' && (
+            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+              {[
+                { name: 'Ahmad Fauzi (XII-IPS 1)', nis: '2025001', pass: 'siswa123', status: 'Kecemasan Tinggi (Target UGM)', badge: '🔴 Butuh Konseling BK' },
+                { name: 'Siti Aminah (XII-MIPA 2)', nis: '2025002', pass: 'siswa123', status: 'Kecemasan Sedang (Target UNAIR)', badge: '🟡 Cemas Sedang' },
+                { name: 'Budi Pratama (XI-MIPA 1)', nis: '2025003', pass: 'siswa123', status: 'Dilema Karier (ITS vs STIS)', badge: '🔵 Dilema Biaya' },
+                { name: 'Dewi Lestari (XII-MIPA 1)', nis: '2025004', pass: 'siswa123', status: 'Kedokteran Hewan IPB', badge: '🟢 Cemas Rendah' },
+                { name: 'Fajar Ramadhan (XII-IPS 2)', nis: '2025005', pass: 'siswa123', status: 'Kecemasan Sangat Tinggi (Ekonomi)', badge: '🔴 Butuh Konseling BK' },
+                { name: 'Rizky Saputra (X-1)', nis: '2025006', pass: 'siswa123', status: 'Akun Siswa Baru', badge: '⚪ Baru Masuk' },
+              ].map((item, idx) => (
+                <button 
+                  type="button"
+                  key={idx}
+                  onClick={() => handleAutofillStudent(item.nis, item.pass)}
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-slate-800/40 hover:bg-indigo-500/10 border border-white/5 hover:border-indigo-500/20 rounded-xl transition-all cursor-pointer text-left gap-2 w-full"
+                >
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-slate-200 group-hover:text-indigo-300 transition-colors flex items-center gap-1.5">
+                      <span>👤 {item.name}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 mt-0.5 group-hover:text-slate-400">
+                      NIS: <span className="font-mono text-slate-300 font-bold">{item.nis}</span> | Sandi: <span className="font-mono text-slate-300">{item.pass}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1 italic">
+                      🎯 {item.status}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between sm:justify-end gap-2 mt-1 sm:mt-0">
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/5">
+                      {item.badge}
+                    </span>
+                    <span className="text-[10px] font-bold text-indigo-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                      Isi ⚡
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'counselor' && (
+            <button 
+              type="button"
+              onClick={() => handleAutofillCounselor('konselor123')}
+              className="group flex items-center justify-between p-3.5 bg-slate-800/40 hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/20 rounded-xl transition-all cursor-pointer text-left w-full"
+            >
+              <div>
+                <div className="text-xs font-bold text-slate-200 group-hover:text-emerald-300 transition-colors flex items-center gap-1.5">
+                  <span>🧑‍🏫 Akun Guru Bimbingan Konseling (BK)</span>
+                </div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  Kode Sandi: <span className="font-mono text-slate-300 font-bold">konselor123</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Isi ⚡
+              </span>
+            </button>
+          )}
+
+          {activeTab === 'admin' && (
+            <button 
+              type="button"
+              onClick={() => handleAutofillAdmin('admin123')}
+              className="group flex items-center justify-between p-3.5 bg-slate-800/40 hover:bg-violet-500/10 border border-white/5 hover:border-violet-500/20 rounded-xl transition-all cursor-pointer text-left w-full"
+            >
+              <div>
+                <div className="text-xs font-bold text-slate-200 group-hover:text-violet-300 transition-colors flex items-center gap-1.5">
+                  <span>🛡️ Akun Administrator Utama</span>
+                </div>
+                <div className="text-[11px] text-slate-500 mt-1">
+                  Kode Sandi: <span className="font-mono text-slate-300 font-bold">admin123</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-violet-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Isi ⚡
+              </span>
+            </button>
+          )}
         </div>
 
         <p className="text-center text-[10px] text-slate-700 mt-6">

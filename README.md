@@ -279,27 +279,28 @@ npm run build
 
 ---
 
-## 🔑 Kredensial Akses & Data Demo
-
-> ⚠️ **Penting:** Kredensial ini hanya untuk keperluan prototipe. Ganti sebelum deployment produksi melalui `/admin/settings`.
-
 ### Akses Login
 
-| Peran | URL | Passcode |
+| Peran | URL | Kredensial Login |
 |:---|:---|:---:|
-| **Administrator** | `/login` → tab Admin | `admin123` |
-| **Guru BK / Konselor** | `/login` → tab Konselor | `konselor123` |
-| **Siswa** | `/login` → tab Siswa | Student ID + Nama |
+| **Administrator** | `/login` → tab Admin | Kode Sandi: `admin123` |
+| **Guru BK / Konselor** | `/login` → tab Konselor | Kode Sandi: `konselor123` |
+| **Siswa** | `/login` → tab Siswa | NIS + Kode Sandi (lihat daftar di bawah) |
 
-### Data Demo Siswa
+### Data Demo Siswa & Kredensial Uji Coba
 
-Gunakan Student ID berikut untuk langsung melihat portofolio tanpa mengisi wizard:
+Anda dapat masuk sebagai siswa simulasi melalui tab login Siswa menggunakan kredensial di bawah ini, atau langsung mengeklik tombol pada widget **"Akun Uji Coba / Demo"** di halaman login untuk *autofill* instan. 
 
-| Nama | Student ID | Kelas | URL Portofolio |
-|:---|:---|:---|:---|
-| Ahmad Fauzi | `mock_ahmad_fauzi` | XII-MIPA-1 | `/portfolio/mock_ahmad_fauzi` |
-| Siti Rahayu | `mock_siti_rahayu` | XII-IPS-2 | `/portfolio/mock_siti_rahayu` |
-| Budi Santoso | `mock_budi_santoso` | XII-MIPA-3 | `/portfolio/mock_budi_santoso` |
+Untuk langsung melihat pratinjau halaman portofolio siswa yang sudah memiliki data pengerjaan (tanpa mengisi wizard bimbingan), gunakan URL Portofolio langsung.
+
+| Nama Siswa | Kelas | NIS (Login) | Kode Sandi | ID Portofolio | Link Portofolio Langsung | Status / Kasus Simulasi |
+|:---|:---:|:---:|:---:|:---|:---|:---|
+| **Ahmad Fauzi** | XII-IPS 1 | `2025001` | `siswa123` | `mock_ahmad_fauzi` | [`/portfolio/mock_ahmad_fauzi`](/portfolio/mock_ahmad_fauzi) | 🔴 Butuh Konseling BK (Kecemasan Tinggi, Target UGM) |
+| **Siti Aminah** | XII-MIPA 2 | `2025002` | `siswa123` | `mock_siti_aminah` | [`/portfolio/mock_siti_aminah`](/portfolio/mock_siti_aminah) | 🟡 Cemas Sedang (Kedokteran Gigi UNAIR) |
+| **Budi Pratama** | XI-MIPA 1 | `2025003` | `siswa123` | `mock_budi_pratama` | [`/portfolio/mock_budi_pratama`](/portfolio/mock_budi_pratama) | 🔵 Dilema Biaya (Teknik Elektro ITS vs Statistika STIS) |
+| **Dewi Lestari** | XII-MIPA 1 | `2025004` | `siswa123` | `mock_dewi_lestari` | [`/portfolio/mock_dewi_lestari`](/portfolio/mock_dewi_lestari) | 🟢 Cemas Rendah (Kedokteran Hewan IPB) |
+| **Fajar Ramadhan** | XII-IPS 2 | `2025005` | `siswa123` | `mock_fajar_ramadhan` | *Belum ada* (harus login) | 🔴 Butuh Konseling BK (Kecemasan Sangat Tinggi, Ekonomi) |
+| **Rizky Saputra** | X-1 | `2025006` | `siswa123` | `mock_rizky_saputra` | *Belum ada* (harus login) | ⚪ Siswa Baru (Belum mengisi skrining/asesmen) |
 
 ---
 
