@@ -6,6 +6,24 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Integrasi CI GitHub Actions & Penyelarasan Target Deployment Vercel
+
+- **Aktivitas:** Mengonfigurasi ulang alur kerja CI/CD otomatisasi GitHub Actions agar kompatibel dengan arsitektur subdirektori monorepo (`ruangkarier-app`), menghapus berkas redundan Netlify, dan menetapkan Vercel sebagai target platform *deployment* serverless utama.
+- **Implementasi & Perubahan:**
+  1. **Konfigurasi GitHub Actions CI (`.github/workflows/nextjs.yml`):**
+     - Mengubah skrip deteksi manajer paket (npm/yarn) dan build agar berjalan di subdirektori `ruangkarier-app` menggunakan instruksi `working-directory`.
+     - Mengubah alur kerja dari *Static GitHub Pages Deployment* menjadi *Build Verification CI* karena aplikasi menggunakan fitur dinamis Server-Side Rendering (SSR) dan Serverless API.
+     - Menyinkronkan cache npm ke `ruangkarier-app/package-lock.json` untuk pengujian build yang sangat cepat.
+  2. **Pemberisihan & Penyelarasan Platform Deployment (Vercel):**
+     - Menghapus berkas konfigurasi `netlify.toml` yang sudah usang dan redundan.
+     - Menegaskan Vercel sebagai target deployment utama aplikasi RuangKarier (Next.js sangat direkomendasikan berjalan di atas Vercel untuk stabilitas performa).
+     - Memperbarui dokumentasi teknis terkait dukungan PDF generation serverless menggunakan `puppeteer-core` dan `@sparticuz/chromium` pada lingkungan Vercel Serverless Functions.
+- **Hasil Verifikasi:**
+  - Build verifikasi lokal dan integrasi CI GitHub Actions berhasil diselesaikan 100% tanpa hambatan.
+  - Alur kerja build lolos pengecekan otomatis dengan exit code 0.
+
+---
+
 ### [2026-05-30] - Penyelarasan Kredensial Uji Coba & Peningkatan UX Login (Widget Demo Autofill)
 
 - **Aktivitas:** Menyempurnakan pengalaman pengujian (demo experience) RuangKarier dengan menormalisasi seluruh kredensial siswa demo, memperbarui API seeder, merancang widget login autofill premium, serta memperbarui dokumentasi proyek.
