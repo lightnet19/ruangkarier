@@ -6,6 +6,16 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Integrasi Logo Resmi (Final) & Ikon Aplikasi RuangKarier
+- **Aktivitas:** Mengintegrasikan aset identitas visual resmi `Logo Ruang Karier (Final).png` dan `Icon Ruang Karier.png` ke seluruh antarmuka web app dan metadata sistem.
+- **Implementasi & Perubahan:**
+  1. **Penyimpanan Aset Publik:** Menyalin berkas logo dan ikon ke direktori `/public` dan direktori internal source `/src/app` agar dapat dilayani oleh server Next.js secara optimal.
+  2. **Metadata & Favicon Global (`src/app/layout.tsx`):** Menambahkan konfigurasi metadata ikon global (`/icon.png`) untuk penayangan favicon resmi pada peramban.
+  3. **Branding Navigasi (`src/components/Navbar.tsx`):** Mengganti ikon fallback GraduationCap pada navigasi header dan teks "RK" pada footer dengan kontainer gambar responsif yang menggunakan berkas ikon resmi (`/icon.png`).
+  4. **Branding Dokumen Portofolio BK (`src/app/portfolio/[id]/page.tsx`):** Meningkatkan estetika Kop Surat Sekolah BK pada portofolio cetak dengan mengganti ikon generik menjadi ikon resmi RuangKarier.
+  5. **Branding Hero Landing Page (`src/app/page.tsx`):** Menambahkan visualisasi resolusi tinggi berkas logo utama (`/logo.png`) langsung pada bagian pembuka Hero Section.
+  6. **Uji Kompilasi:** Melakukan verifikasi produksi (`npm run build`) dan berhasil dikompilasi dengan sukses penuh 100%.
+
 ### [2026-05-30] - Finalisasi Migrasi Flatfile Database & Sinkronisasi API Real-Time
 - **Aktivitas:** Mengintegrasikan sistem database flatfile server-side (`data/db.json`) dengan antarmuka siswa (Wizard), dasbor Guru BK (Counselor), dan halaman Portofolio, diikuti dengan pengujian kompilasi produksi.
 - **Implementasi & Perubahan:**

@@ -19,9 +19,8 @@ export function Navbar() {
     <nav className="sticky top-0 z-40 w-full glass-card border-b border-primary/5 px-4 md:px-8 py-3.5 flex items-center justify-between no-print">
       {/* Brand Logo & Icon */}
       <Link href="/" className="flex items-center gap-2 group cursor-pointer select-none">
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/10">
-          <GraduationCap size={22} className="group-hover:scale-110 transition-transform duration-300" />
-          <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 rounded-full border-2 border-white bg-secondary" />
+        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-white shadow-md border border-primary/10 overflow-hidden">
+          <img src="/icon.png" alt="Icon Ruang Karier" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
         </div>
         <div className="flex flex-col">
           <span className="text-md font-bold leading-tight font-heading text-primary tracking-wide">
@@ -67,8 +66,8 @@ export function Footer() {
         {/* Col 1 */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary text-primary font-black">
-              RK
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white overflow-hidden border border-white/10 shadow-sm">
+              <img src="/icon.png" alt="Icon Ruang Karier" className="w-full h-full object-cover" />
             </div>
             <span className="text-lg font-bold font-heading">
               Ruang<span className="text-secondary">Karier</span>

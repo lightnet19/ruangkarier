@@ -81,6 +81,10 @@ export default function Home() {
 
         {/* Text Content */}
         <div className="flex-1 text-left flex flex-col gap-6 select-none animate-fade-in-up">
+          {/* Brand Logo Display */}
+          <div className="h-12 w-auto max-w-[240px] relative mb-2">
+            <img src="/logo.png" alt="Logo Ruang Karier" className="h-full w-auto object-contain" />
+          </div>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-secondary/15 text-primary border border-secondary/20 w-fit">
             <ShieldCheck size={16} className="text-secondary fill-secondary/10" />
             <span className="text-xs font-bold font-heading tracking-wide uppercase">

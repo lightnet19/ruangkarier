@@ -196,8 +196,8 @@ export default function StudentPortfolio({ params }: PageProps) {
         {/* 1. Formal Document Header (KOP Surat Sekolah BK) */}
         <header className="border-b-4 border-primary pb-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-white">
-              <GraduationCap size={32} className="text-secondary" />
+            <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-primary/10 shadow-sm">
+              <img src="/icon.png" alt="Icon Ruang Karier" className="w-full h-full object-cover" />
             </div>
             <div className="text-left flex flex-col">
               <span className="text-lg font-black font-heading tracking-wide uppercase text-primary leading-tight">
