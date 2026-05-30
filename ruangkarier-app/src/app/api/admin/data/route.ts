@@ -3,7 +3,7 @@ import { readDb, writeDb } from '@/lib/flatfileDb';
 
 function validateAdmin(req: NextRequest, db: Awaited<ReturnType<typeof readDb>>) {
   const passcode = req.headers.get('x-admin-passcode') || req.nextUrl.searchParams.get('passcode');
-  const adminPasscode = db.adminSettings?.passcode || 'ADMIN2026';
+  const adminPasscode = db.adminSettings?.passcode || 'admin123';
   return passcode === adminPasscode;
 }
 

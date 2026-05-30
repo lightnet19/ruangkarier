@@ -81,12 +81,12 @@ async function ensureDbExists() {
     const defaultData: DbSchema = {
       students: [],
       counselorSettings: {
-        passcode: "BK2026",
+        passcode: "konselor123",
         schoolName: "SMA Negeri Pilihan",
         updatedAt: new Date().toISOString()
       },
       adminSettings: {
-        passcode: "ADMIN2026",
+        passcode: "admin123",
         updatedAt: new Date().toISOString()
       }
     };

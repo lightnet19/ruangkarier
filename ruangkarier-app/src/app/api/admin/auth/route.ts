@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     // Ensure adminSettings exists (backward compat with older db.json)
     if (!db.adminSettings) {
-      db.adminSettings = { passcode: 'ADMIN2026', updatedAt: new Date().toISOString() };
+      db.adminSettings = { passcode: 'admin123', updatedAt: new Date().toISOString() };
       await writeDb(db);
     }
 
@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest) {
     const db = await readDb();
 
     if (!db.adminSettings) {
-      db.adminSettings = { passcode: 'ADMIN2026', updatedAt: new Date().toISOString() };
+      db.adminSettings = { passcode: 'admin123', updatedAt: new Date().toISOString() };
     }
 
     if (currentPasscode !== db.adminSettings.passcode) {

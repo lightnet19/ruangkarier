@@ -6,6 +6,14 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Update Passcode Kredensial Admin & Konselor BK
+- **Aktivitas:** Mengubah kode sandi default untuk akses administrator dan konselor/Guru BK di seluruh sistem.
+- **Implementasi & Perubahan:**
+  1. **Konfigurasi `data/db.json`:** Memperbarui field `adminSettings.passcode` menjadi `admin123` dan `counselorSettings.passcode` menjadi `konselor123` untuk akses data langsung.
+  2. **Inisialisasi `src/lib/flatfileDb.ts`:** Mengubah nilai default pembuatan database (fallback inisialisasi awal) agar menggunakan `admin123` dan `konselor123`.
+  3. **Fallback Rute API (`src/app/api/admin/*`):** Menyesuaikan konstanta fallback sandi admin dari `ADMIN2026` menjadi `admin123` pada file API auth, data, dan reports demi konsistensi sistem.
+  4. **Verifikasi Build:** Menjalankan kompilasi produksi `cmd /c npm run build` dan berhasil 100% tanpa error (Exit Code: 0).
+
 ### [2026-05-30] - Resolving "Maximum Update Depth Exceeded" in Student Wizard
 - **Aktivitas:** Memperbaiki rendering loop ("Maximum update depth exceeded") ketika pengguna mengklik link navigasi "Bimbingan Siswa" (`/student`).
 - **Masalah:** 

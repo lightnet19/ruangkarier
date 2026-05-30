@@ -302,12 +302,12 @@
     }
   ],
   "counselorSettings": {
-    "passcode": "BK2026",
+    "passcode": "konselor123",
     "schoolName": "SMA Negeri Pilihan",
     "updatedAt": "2026-05-30T08:51:30.000Z"
   },
   "adminSettings": {
-    "passcode": "ADMIN2026",
+    "passcode": "admin123",
     "updatedAt": "2026-05-30T08:51:30.000Z"
   }
 }
