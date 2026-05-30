@@ -1,0 +1,436 @@
+{
+  "appName": "RuangKarier",
+  "description": "Web app bimbingan karier online untuk siswa SMA/MA berbasis card dashboard, RIASEC, eksplorasi karier, LKPD digital, evaluasi layanan, dan tindak lanjut BK.",
+  "entities": [
+    {
+      "name": "users",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "enum": [
+            "student",
+            "counselor",
+            "admin"
+          ]
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "school",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "class_name",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "student_code",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "default": "active"
+        }
+      ]
+    },
+    {
+      "name": "consent_sessions",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "consent_checked",
+          "type": "boolean"
+        },
+        {
+          "name": "confidence_score",
+          "type": "integer",
+          "range": "1-10"
+        },
+        {
+          "name": "main_problem",
+          "type": "text"
+        },
+        {
+          "name": "preparation_notes",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "screening_responses",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "item_code",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "score",
+          "type": "integer",
+          "range": "0-4"
+        }
+      ]
+    },
+    {
+      "name": "riasec_responses",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "item_no",
+          "type": "integer",
+          "range": "1-30"
+        },
+        {
+          "name": "dimension",
+          "type": "string",
+          "enum": [
+            "R",
+            "I",
+            "A",
+            "S",
+            "E",
+            "C"
+          ]
+        },
+        {
+          "name": "score",
+          "type": "integer",
+          "range": "1-5"
+        }
+      ]
+    },
+    {
+      "name": "riasec_results",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "r_total",
+          "type": "integer"
+        },
+        {
+          "name": "i_total",
+          "type": "integer"
+        },
+        {
+          "name": "a_total",
+          "type": "integer"
+        },
+        {
+          "name": "s_total",
+          "type": "integer"
+        },
+        {
+          "name": "e_total",
+          "type": "integer"
+        },
+        {
+          "name": "c_total",
+          "type": "integer"
+        },
+        {
+          "name": "top3_code",
+          "type": "string"
+        },
+        {
+          "name": "summary_text",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "career_modules",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "module_type",
+          "type": "string",
+          "enum": [
+            "ptn",
+            "pts",
+            "ptkin",
+            "kedinasan",
+            "kerja",
+            "wirausaha"
+          ]
+        },
+        {
+          "name": "riasec_tags",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "content",
+          "type": "text"
+        },
+        {
+          "name": "media_url",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "sort_order",
+          "type": "integer",
+          "default": 0
+        }
+      ]
+    },
+    {
+      "name": "action_plans",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "goal",
+          "type": "text"
+        },
+        {
+          "name": "challenge_level",
+          "type": "integer",
+          "range": "1-10"
+        },
+        {
+          "name": "emotion_text",
+          "type": "text"
+        },
+        {
+          "name": "negative_thought",
+          "type": "text"
+        },
+        {
+          "name": "evidence_negative",
+          "type": "text"
+        },
+        {
+          "name": "counter_evidence",
+          "type": "text"
+        },
+        {
+          "name": "alternative_view",
+          "type": "text"
+        },
+        {
+          "name": "new_belief",
+          "type": "text"
+        },
+        {
+          "name": "top_actions",
+          "type": "json"
+        },
+        {
+          "name": "monthly_actions",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "name": "evaluations",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "understanding_score",
+          "type": "integer",
+          "range": "1-10"
+        },
+        {
+          "name": "comfort_score",
+          "type": "integer",
+          "range": "1-10"
+        },
+        {
+          "name": "action_score",
+          "type": "integer",
+          "range": "1-10"
+        },
+        {
+          "name": "notes",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "counseling_requests",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "reason",
+          "type": "text"
+        },
+        {
+          "name": "priority",
+          "type": "string",
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "urgent"
+          ]
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "enum": [
+            "new",
+            "scheduled",
+            "done",
+            "cancelled"
+          ]
+        },
+        {
+          "name": "counselor_notes",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "scheduled_at",
+          "type": "datetime",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "portfolio_exports",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "relation": "users.id"
+        },
+        {
+          "name": "pdf_url",
+          "type": "string"
+        },
+        {
+          "name": "sent_to_counselor",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "sent_at",
+          "type": "datetime",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    "users 1-to-many consent_sessions",
+    "users 1-to-many screening_responses",
+    "users 1-to-many riasec_responses",
+    "users 1-to-many riasec_results",
+    "users 1-to-many action_plans",
+    "users 1-to-many evaluations",
+    "users 1-to-many counseling_requests",
+    "users 1-to-many portfolio_exports"
+  ],
+  "workflow": [
+    "Landing page",
+    "Consent and screening",
+    "RIASEC assessment",
+    "Career exploration",
+    "Action plan",
+    "Evaluation",
+    "Portfolio export",
+    "Counseling request if needed"
+  ]
+}

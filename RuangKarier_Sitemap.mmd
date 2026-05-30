@@ -1,0 +1,24 @@
+flowchart TD
+    A[Landing Page] --> B[Mulai Eksplorasi]
+    B --> C[Consent & Profil Awal]
+    C --> D[Screening Hambatan Karier]
+    D --> E{Anxiety tinggi atau butuh bantuan?}
+    E -- Ya --> F[Safety Card: Hubungi Guru BK]
+    E -- Tidak --> G[RIASEC Assessment]
+    G --> H[Hasil Top 3 RIASEC]
+    H --> I[Jelajah Karier]
+    I --> J[PTN / PTS / PTKIN / Kedinasan / Kerja / Wirausaha]
+    J --> K[LKPD: Career Action Planner]
+    K --> L[Evaluasi Layanan UCE]
+    L --> M[Portofolio PDF]
+    L --> N{Perlu RTL?}
+    N -- Ya --> O[Daftar Konseling Lanjutan]
+    N -- Tidak --> P[Selesai]
+
+    subgraph Admin
+      Q[Admin Login] --> R[Admin Dashboard]
+      R --> S[Manage Career Content]
+      R --> T[View Assessments]
+      R --> U[View Counseling Requests]
+      R --> V[Export Reports]
+    end
