@@ -11,11 +11,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](#)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-brightgreen?style=for-the-badge&logo=vercel&logoColor=white)](https://ruangkarier.vercel.app/)
 
 > *Membantu siswa SMA/MA menjelajahi potensi karier, mengatasi kecemasan akademik, dan menyusun rencana aksi nyata — dalam satu platform terintegrasi.*
 
-[🚀 Demo Langsung](#-cara-menjalankan) · [📖 Dokumentasi](#-dokumentasi) · [🐛 Laporkan Bug](https://github.com/lightnet19/ruangkarier/issues) · [✨ Minta Fitur](https://github.com/lightnet19/ruangkarier/issues)
+[🚀 Demo Langsung (Vercel)](https://ruangkarier.vercel.app/) · [📖 Dokumentasi](#-dokumentasi) · [🐛 Laporkan Bug](https://github.com/lightnet19/ruangkarier/issues) · [✨ Minta Fitur](https://github.com/lightnet19/ruangkarier/issues)
+
 
 </div>
 
@@ -208,7 +209,7 @@ Profil Awal     Karier          Real-Time       Holland         Karier          
 | **Ikon** | Lucide React | 1.17+ |
 | **Database** | Flatfile JSON (`data/db.json`) | — |
 | **Font** | Plus Jakarta Sans, Inter (Google Fonts) | — |
-| **Deployment** | Netlify / Vercel (rekomendasi) | — |
+| **Deployment** | Vercel (Produksi) | [ruangkarier.vercel.app](https://ruangkarier.vercel.app/) |
 
 ### Desain Sistem Warna
 
@@ -267,11 +268,11 @@ npm run build
 
 > ⚠️ **Penting:** Kredensial ini hanya untuk keperluan prototipe. Ganti sebelum deployment produksi.
 
-| Peran | URL Akses | Passcode |
-|:---|:---|:---:|
-| **Administrator** | [`/admin`](http://localhost:3000/admin) | `admin123` |
-| **Guru BK / Konselor** | [`/counselor`](http://localhost:3000/counselor) | `konselor123` |
-| **Siswa** | [`/student`](http://localhost:3000/student) | *(tanpa sandi)* |
+| Peran | URL Akses (Vercel) | URL Akses (Lokal) | Passcode |
+|:---|:---|:---|:---:|
+| **Administrator** | [`/admin`](https://ruangkarier.vercel.app/admin) | [`/admin`](http://localhost:3000/admin) | `admin123` |
+| **Guru BK / Konselor** | [`/counselor`](https://ruangkarier.vercel.app/counselor) | [`/counselor`](http://localhost:3000/counselor) | `konselor123` |
+| **Siswa** | [`/student`](https://ruangkarier.vercel.app/student) | [`/student`](http://localhost:3000/student) | *(tanpa sandi)* |
 
 Passcode disimpan dalam `ruangkarier-app/data/db.json` dan dapat diubah melalui:
 - Panel Admin → **Pengaturan** (`/admin/settings`)

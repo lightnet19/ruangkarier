@@ -6,6 +6,16 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Penerapan Vercel Production Deployment & Pembaruan Dokumentasi
+- **Aktivitas:** Melakukan perilisan versi live aplikasi RuangKarier ke platform Vercel dan memperbarui dokumentasi.
+- **Implementasi & Perubahan:**
+  1. **Deployment Vercel:** Berhasil menghubungkan repositori GitHub ke platform Vercel dan melakukan deploy web aplikasi pada domain resmi: [ruangkarier.vercel.app](https://ruangkarier.vercel.app/).
+  2. **Pembaruan `README.md`:** 
+     - Menambahkan lencana status deployment Vercel resmi.
+     - Memperbarui demo link langsung yang mengarah ke tautan Vercel.
+     - Menyematkan tautan akses produksi untuk Administrator, Konselor, dan Siswa pada bagian kredensial akses di README.
+  3. **Integrasi Flatfile Database di Vercel:** Platform Next.js API Routes berhasil dieksekusi secara serverless dan merespons data in-memory/flatfile db dari basis berkas statis `db.json` dengan performa optimal.
+
 ### [2026-05-30] - Update Passcode Kredensial Admin & Konselor BK
 - **Aktivitas:** Mengubah kode sandi default untuk akses administrator dan konselor/Guru BK di seluruh sistem.
 - **Implementasi & Perubahan:**
