@@ -10,9 +10,9 @@ export interface StudentSession {
     name: string;
     className: string;
     consentChecked: boolean;
-    confidenceScore: number;
-    mainProblem: string;
-    prepNotes: string;
+    confidenceScore?: number;
+    mainProblem?: string;
+    prepNotes?: string;
   };
   screeningResponses?: Record<string, number>;
   anxietyLogs?: {
@@ -54,6 +54,10 @@ export interface StudentSession {
     sentToCounselor: boolean;
     sentAt?: string;
   };
+  nis?: string;
+  passcode?: string;
+  name?: string;
+  className?: string;
   createdAt: string;
   updatedAt?: string;
 }

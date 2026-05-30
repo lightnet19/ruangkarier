@@ -14,7 +14,10 @@ import {
   Search,
   CheckCircle,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  UserCog,
+  ArrowRight,
+  Lock
 } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -94,6 +97,7 @@ export default function CounselorDashboard() {
         setSchoolName(data.schoolName || 'SMA Negeri Pilihan');
         setIsAuthorized(true);
         localStorage.setItem('ruangkarier_counselor_passcode', code);
+        sessionStorage.setItem('rk_counselor_passcode', code);
       } else {
         const errData = await res.json();
         setErrorMsg(errData.error || 'Kode sandi Guru BK tidak valid!');
@@ -108,7 +112,7 @@ export default function CounselorDashboard() {
   };
 
   useEffect(() => {
-    const savedPasscode = localStorage.getItem('ruangkarier_counselor_passcode');
+    const savedPasscode = localStorage.getItem('ruangkarier_counselor_passcode') || sessionStorage.getItem('rk_counselor_passcode');
     if (savedPasscode) {
       setPasscode(savedPasscode);
       fetchData(savedPasscode);
@@ -126,6 +130,7 @@ export default function CounselorDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('ruangkarier_counselor_passcode');
+    sessionStorage.removeItem('rk_counselor_passcode');
     setPasscode('');
     setInputPasscode('');
     setIsAuthorized(false);
@@ -441,6 +446,90 @@ export default function CounselorDashboard() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-sm font-semibold text-primary animate-pulse font-heading">
+            Memverifikasi akses Guru BK...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center p-4 relative">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
+        </div>
+        <div className="w-full max-w-md bg-white rounded-3xl border border-primary/5 shadow-2xl p-8 relative overflow-hidden flex flex-col gap-6 text-left z-10">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-secondary/15 flex items-center justify-center text-primary">
+              <UserCog size={32} className="stroke-[1.5]" />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold text-primary font-heading">
+                Akses Khusus Guru BK 🏫
+              </h2>
+              <p className="text-xs text-muted-gray mt-1">
+                Masukkan kode sandi bimbingan konseling untuk membuka dasbor analisis.
+              </p>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleAuthSubmit} className="flex flex-col gap-4">
+            {errorMsg && (
+              <div className="text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-xl px-4 py-3 font-medium">
+                ⚠️ {errorMsg}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-primary uppercase tracking-wider">
+                Kode Sandi Guru BK
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Masukkan kode sandi..."
+                  value={inputPasscode}
+                  onChange={(e) => setInputPasscode(e.target.value)}
+                  className="w-full py-3 px-4 rounded-xl border border-primary/10 text-sm focus:outline-none focus:border-secondary transition-all"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-primary hover:bg-primary-light text-white font-extrabold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border border-transparent"
+            >
+              <span>Verifikasi Akses</span>
+              <ArrowRight size={14} />
+            </button>
+          </form>
+
+          {/* Back button */}
+          <div className="border-t border-primary/5 pt-4 text-center">
+            <Link 
+              href="/login?tab=counselor" 
+              className="text-xs font-bold text-secondary hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              <span>Gunakan Portal Login Utama</span>
+              <ExternalLink size={12} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-8 flex flex-col gap-8 select-none">
       
@@ -474,6 +563,14 @@ export default function CounselorDashboard() {
           >
             <Trash2 size={15} />
             <span>Kosongkan</span>
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer border border-slate-200"
+          >
+            <Lock size={15} />
+            <span>Keluar</span>
           </button>
         </div>
       </section>

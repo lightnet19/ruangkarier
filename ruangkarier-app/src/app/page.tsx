@@ -11,7 +11,9 @@ import {
   Sparkles, 
   ShieldCheck, 
   TrendingUp, 
-  Users 
+  Users,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 
 export default function Home() {
@@ -104,21 +106,32 @@ export default function Home() {
             Selamat datang di safe space bimbingan karier digital Anda. Dirancang khusus bagi siswa SMA/MA/SMK untuk memetakan potensi diri (Holland RIASEC), menepis kecemasan masa depan melalui restrukturisasi kognitif (CBT), dan menyusun Career Action Plan nyata.
           </p>
 
-          <div className="flex flex-wrap gap-4 mt-2">
+          <div className="flex flex-wrap gap-3 mt-2">
             <Link 
-              href="/student" 
+              href={hasStarted ? '/student' : '/register'} 
               className="flex items-center gap-2 py-4 px-6 md:px-8 bg-primary hover:bg-primary-light text-white text-sm font-bold rounded-2xl shadow-lg transition-all active:scale-[0.98] cursor-pointer"
             >
-              <span>{hasStarted ? `Lanjutkan Eksplorasi (${userName})` : 'Mulai Eksplorasi Sekarang'}</span>
-              <ArrowRight size={18} className="text-secondary" />
+              {hasStarted ? (
+                <><LogIn size={18} className="text-secondary" /><span>Lanjutkan Eksplorasi ({userName})</span></>
+              ) : (
+                <><UserPlus size={18} className="text-secondary" /><span>Daftar & Mulai Sekarang</span></>
+              )}
             </Link>
             
             <Link 
-              href="/counselor" 
+              href="/login?tab=counselor" 
               className="flex items-center gap-2 py-4 px-6 bg-white/70 hover:bg-white text-primary text-sm font-bold rounded-2xl border border-primary/10 transition-all cursor-pointer"
             >
               <Users size={18} />
               <span>Portal Guru BK</span>
+            </Link>
+
+            <Link 
+              href="/login?tab=admin" 
+              className="flex items-center gap-2 py-3 px-5 bg-transparent hover:bg-primary/5 text-primary/50 hover:text-primary text-xs font-semibold rounded-2xl border border-primary/10 transition-all cursor-pointer"
+            >
+              <ShieldCheck size={14} />
+              <span>Admin</span>
             </Link>
           </div>
         </div>

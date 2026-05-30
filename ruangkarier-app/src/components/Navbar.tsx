@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Compass, GraduationCap, UserCog, Sparkles } from 'lucide-react';
+import { Compass, UserCog, Sparkles, LogIn } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -13,7 +13,6 @@ export function Navbar() {
     { href: '/student', label: 'Bimbingan Siswa', icon: Compass },
     { href: '/counselor', label: 'Dasbor Guru BK', icon: UserCog },
   ];
-
 
   return (
     <nav className="sticky top-0 z-40 w-full glass-card border-b border-primary/5 px-4 md:px-8 py-3.5 flex items-center justify-between no-print">
@@ -32,12 +31,12 @@ export function Navbar() {
         </div>
       </Link>
 
-      {/* Nav Links */}
-      <div className="flex items-center gap-2 md:gap-4">
+      {/* Nav Links + Login Button */}
+      <div className="flex items-center gap-1.5 md:gap-3">
         {navLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
-          
+
           return (
             <Link
               key={link.href}
@@ -53,6 +52,19 @@ export function Navbar() {
             </Link>
           );
         })}
+
+        {/* Login / Masuk Button */}
+        <Link
+          href="/login"
+          className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer border ${
+            pathname === '/login' || pathname === '/register'
+              ? 'bg-secondary text-white border-secondary shadow-md'
+              : 'bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary hover:text-white'
+          }`}
+        >
+          <LogIn size={16} />
+          <span className="hidden sm:inline">Masuk</span>
+        </Link>
       </div>
     </nav>
   );
@@ -96,11 +108,30 @@ export function Footer() {
         {/* Col 3 */}
         <div>
           <h4 className="text-sm font-bold font-heading mb-4 text-secondary uppercase tracking-wider">
-            Tentang Sistem
+            Portal Akses
           </h4>
-          <p className="text-xs text-muted-gray leading-relaxed">
-            Dikembangkan dengan kolaborasi teoretis akademis Bimbingan dan Konseling berbasis konseling kognitif perilaku (CBT) dan tipe kepribadian RIASEC Holland.
-          </p>
+          <ul className="text-xs text-muted-gray space-y-2">
+            <li>
+              <Link href="/login" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <span>🎓</span> Login Siswa
+              </Link>
+            </li>
+            <li>
+              <Link href="/register" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <span>✏️</span> Daftar Akun Siswa
+              </Link>
+            </li>
+            <li>
+              <Link href="/login?tab=counselor" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <span>👩‍🏫</span> Portal Guru BK
+              </Link>
+            </li>
+            <li>
+              <Link href="/login?tab=admin" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <span>🛡️</span> Panel Administrator
+              </Link>
+            </li>
+          </ul>
           <div className="mt-4 pt-3 border-t border-white/5 text-[11px] text-muted-gray">
             Status: <span className="text-emerald-400 font-semibold">Aktif (Simulasi Offline Database)</span>
           </div>

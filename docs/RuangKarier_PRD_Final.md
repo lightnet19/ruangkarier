@@ -189,7 +189,7 @@ Berikut adalah cetak biru format penyimpanan berkas JSON (`data/db.json`):
     }
   ],
   "counselorSettings": {
-    "passcode": "BK2026",
+    "passcode": "konselor123",
     "schoolName": "SMA Negeri Pilihan",
     "updatedAt": "2026-05-30T08:00:00.000Z"
   }
@@ -294,7 +294,7 @@ async function ensureDbExists() {
     const defaultData: DbSchema = {
       students: [],
       counselorSettings: {
-        passcode: "BK2026",
+        passcode: "konselor123",
         schoolName: "SMA Negeri Pilihan",
         updatedAt: new Date().toISOString()
       }

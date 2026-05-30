@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useState, useEffect } from 'react';
+import React, { use, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -79,6 +79,8 @@ export default function StudentPortfolio({ params }: PageProps) {
   const router = useRouter();
   const { id } = use(params);
   
+  const reportRef = useRef<HTMLElement>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [sessions] = useLocalStorage<StudentSession[]>('ruangkarier_submissions', []);
   const [session, setSession] = useState<StudentSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,6 +121,33 @@ export default function StudentPortfolio({ params }: PageProps) {
   const handlePrint = () => {
     if (typeof window !== 'undefined') {
       window.print();
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      
+      const response = await fetch(`/api/portfolio/generate-pdf?id=${id}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Gagal menghasilkan berkas PDF.');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Portofolio_RuangKarier_${profile?.name ? profile.name.replace(/\s+/g, '_') : 'Siswa'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error: any) {
+      console.error("Gagal mengekspor berkas portofolio PDF:", error);
+      alert(`Gagal mengunduh PDF: ${error.message || error}`);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -169,11 +198,24 @@ export default function StudentPortfolio({ params }: PageProps) {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 py-2.5 px-5 bg-secondary hover:bg-secondary-light text-primary text-xs font-extrabold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-1.5 py-2.5 px-5 bg-secondary hover:bg-secondary-light text-primary text-xs font-extrabold rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            <Printer size={16} />
-            <span>Cetak / Ekspor PDF</span>
+            {isGeneratingPdf ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary" />
+            ) : (
+              <FileBadge size={16} />
+            )}
+            <span>{isGeneratingPdf ? 'Membuat PDF...' : 'Unduh PDF'}</span>
+          </button>
+
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 py-2.5 px-4 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+          >
+            <Printer size={15} />
+            <span>Cetak</span>
           </button>
           
           <Link
@@ -186,7 +228,7 @@ export default function StudentPortfolio({ params }: PageProps) {
       </section>
 
       {/* 📄 Formal Printable Document Container */}
-      <article className="bg-white rounded-3xl p-8 md:p-12 border border-primary/5 shadow-xl print-card flex flex-col gap-8 text-left text-text-dark font-sans relative">
+      <article ref={reportRef} className="bg-white rounded-3xl p-8 md:p-12 border border-primary/5 shadow-xl print-card flex flex-col gap-8 text-left text-text-dark font-sans relative">
         
         {/* Document watermark/badge */}
         <div className="absolute top-8 right-8 text-primary opacity-10 no-print">
