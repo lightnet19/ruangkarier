@@ -129,8 +129,14 @@ function StudentWizardInner() {
   const [safetyAlertTriggered, setSafetyAlertTriggered] = useState(false);
   const [isSafetyOpen, setIsSafetyOpen] = useState(false);
 
-  // Step 4: RIASEC responses (1 to 30, scores 1 to 5)
-  const [riasecResponses, setRiasecResponses] = useState<Record<number, number>>({});
+  // Step 4: RIASEC responses (1 to 30, scores 1 to 5) - default to Neutral (3)
+  const [riasecResponses, setRiasecResponses] = useState<Record<number, number>>(() => {
+    const initialResponses: Record<number, number> = {};
+    riasecQuestions.forEach((q) => {
+      initialResponses[q.id] = 3; // default Neutral
+    });
+    return initialResponses;
+  });
   const [riasecScores, setRiasecScores] = useState<{
     R: number; I: number; A: number; S: number; E: number; C: number; top3Code: string;
   } | null>(null);
@@ -173,15 +179,8 @@ function StudentWizardInner() {
     "Berjalan ke ruang BK untuk melakukan validasi dan konsultasi mendalam bersama Guru BK sekolah."
   ];
 
-  // Initialize RIASEC with netral (3) on load
+  // Create new session ID if not set on load
   useEffect(() => {
-    const initialResponses: Record<number, number> = {};
-    riasecQuestions.forEach((q) => {
-      initialResponses[q.id] = 3; // default Neutral
-    });
-    setRiasecResponses(initialResponses);
-    
-    // Create new session ID if not set
     if (!currentSessionId) {
       setCurrentSessionId('rk_' + Math.random().toString(36).substr(2, 9));
     }

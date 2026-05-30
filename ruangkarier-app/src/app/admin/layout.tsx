@@ -55,14 +55,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, []);
 
+  const hasValidated = React.useRef(false);
+
   useEffect(() => {
+    if (isAuthorized || hasValidated.current) {
+      return;
+    }
+    hasValidated.current = true;
+
     const saved = sessionStorage.getItem('rk_admin_passcode');
     if (saved) {
       validatePasscode(saved);
     } else {
       setChecking(false);
     }
-  }, [validatePasscode]);
+  }, [validatePasscode, isAuthorized]);
+
 
   const handleLogout = () => {
     sessionStorage.removeItem('rk_admin_passcode');

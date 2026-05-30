@@ -6,6 +6,29 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Resolving "Maximum Update Depth Exceeded" in Student Wizard
+- **Aktivitas:** Memperbaiki rendering loop ("Maximum update depth exceeded") ketika pengguna mengklik link navigasi "Bimbingan Siswa" (`/student`).
+- **Masalah:** 
+  1. Komponen `StudentWizardInner` memicu pembaruan state di dalam `useEffect` saat mount tanpa dependensi stabil, diperparah dengan fungsi `setValue` pada hook kustom `useLocalStorage` yang berubah di setiap siklus rendering.
+- **Implementasi & Perubahan:**
+  1. **Custom Hook `useLocalStorage.ts`:** Menggunakan `useCallback` dan pembaruan state fungsional (`prevState => ...`) untuk menstabilkan referensi fungsi `setValue` dan mencegah eksekusi ulang side-effect yang tidak perlu.
+  2. **Student Page (`src/app/student/page.tsx`):** Memindahkan generator inisialisasi respons RIASEC langsung ke fungsi inisialisasi `useState` daripada menggunakan kombinasi `useEffect` + `setRiasecResponses`, memutus total rantai render loop.
+  3. **Verifikasi Stabilitas Admin & Publik:** Melakukan verifikasi navigasi penuh menggunakan browser otomatis pada sub-halaman `/admin/*` (Assessments, Career Content, Counseling Requests, Reports, Settings) dan `/student`, semuanya berjalan lancar dan super stabil.
+  4. **Kompilasi Sukses:** Perintah kompilasi produksi `npm run build` berhasil dikompilasi 100% tanpa kesalahan tipe TypeScript maupun *warning* kompilasi.
+
+### [2026-05-30] - Perbaikan Bug Loop Auth Admin Dashboard
+- **Aktivitas:** Mengatasi issue rendering loop ("Maximum update depth exceeded") pada Admin Layout saat melakukan inisialisasi auto-login.
+- **Implementasi & Perubahan:**
+  1. **Admin Layout (`src/app/admin/layout.tsx`):**
+     - Menyuntikkan `React.useRef(false)` (`hasValidated`) untuk mengunci eksekusi `useEffect` auto-login agar berjalan **tepat satu kali** pada saat mount pertama.
+     - Menambahkan filter pengaman `isAuthorized` di dalam `useEffect` agar proses autentikasi otomatis tidak diulang jika admin sudah terverifikasi masuk.
+     - Memperbarui array dependensi `useEffect` dengan menyertakan `isAuthorized` secara aman guna memenuhi kriteria build Next.js.
+  2. **Validasi Produksi & Stabilitas:**
+     - Berhasil menjalankan kompilasi produksi `npm run build` dengan status sukses penuh tanpa peringatan atau error.
+     - Menguji kestabilan antarmuka admin menggunakan peramban otomatis: log masuk dengan sandi benar/salah, navigasi ke 6 halaman dashboard BK, dan logout berjalan sangat mulus tanpa error re-render.
+- **Keputusan Teknis:**
+  - Penggunaan `useRef` sebagai *guard flag* adalah standar industri React untuk mengatasi eksekusi ganda side-effect inisialisasi (terutama di React 18+ Strict Mode dan HMR), menjamin perlindungan mutlak dari looping pembaruan state secara rekursif.
+
 ### [2026-05-30] - Implementasi Admin Dashboard (Fase 6 — Manajemen Sistem)
 - **Aktivitas:** Membangun Admin Dashboard lengkap di `/admin` dengan sistem autentikasi, analitik terpusat, manajemen data siswa, pratinjau konten karier, manajemen permintaan konseling, dan ekspor laporan.
 - **Implementasi & Perubahan:**
