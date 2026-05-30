@@ -57,7 +57,7 @@ Dibangun di atas fondasi tiga teori konseling terkemuka: **Teori Karier Donald S
 - 📊 **Mengevaluasi** proses bimbingan dengan skala UCE (Understanding, Comfort, Action)
 - 📁 **Menghasilkan** portofolio karier digital berkualitas tinggi yang siap dicetak
 
-> **Status Pengembangan:** Fase 6 — Server-Side PDF, Login/Register, Multi-Role Auth. Siap uji pengguna.
+> **Status Pengembangan:** Fase 6 selesai (PDF + Login + Auth). Fase 7 (Supabase + Database Karier) sedang direncanakan.
 
 ---
 
@@ -423,9 +423,10 @@ Dokumentasi teknis lengkap tersedia di folder [`docs/`](./docs/):
 
 | Dokumen | Deskripsi |
 |:---|:---|
+| [`competitive_analysis_roadmap.md`](./docs/competitive_analysis_roadmap.md) | ⭐ Analisis kompetitor & roadmap Fase 7–10 (dokumen terbaru) |
+| [`devplan.md`](./docs/devplan.md) | Rencana pengembangan per fase + status terkini + panduan kontributor |
 | [`RuangKarier_PRD_Final.md`](./docs/RuangKarier_PRD_Final.md) | Product Requirements Document — referensi teknis utama |
 | [`devlog.md`](./docs/devlog.md) | Log pengembangan harian & keputusan teknis |
-| [`devplan.md`](./docs/devplan.md) | Rencana & strategi pengembangan per fase |
 | [`design.md`](./docs/design.md) | Panduan sistem desain visual & warna |
 | [`implementation_plan.md`](./docs/implementation_plan.md) | Rencana implementasi teknis detail |
 
@@ -433,17 +434,23 @@ Dokumentasi teknis lengkap tersedia di folder [`docs/`](./docs/):
 
 ## 🗺️ Roadmap Pengembangan
 
-- [x] **Fase 1** — Inisiasi proyek, Informed Consent, useLocalStorage hook
+### ✅ Selesai
+- [x] **Fase 1** — Fondasi & sistem desain (Next.js, TailwindCSS, glassmorphism)
 - [x] **Fase 2** — Instrumen RIASEC Holland (30 item) & CBT LKPD
-- [x] **Fase 3** — Dashboard BK, Mock Seeder & Evaluasi UCE
-- [x] **Fase 4** — Kompilasi produksi, perbaikan bug rendering & TypeScript
-- [x] **Fase 5** — Flatfile database, sinkronisasi API real-time, branding resmi
-- [x] **Fase 6a** — Admin Dashboard lengkap (6 halaman, auth, ekspor)
-- [x] **Fase 6b** — Server-Side PDF generation (Puppeteer headless)
+- [x] **Fase 3** — Wizard siswa 7 langkah, Safety Alert, Evaluasi UCE
+- [x] **Fase 4** — Portofolio cetak, Dashboard BK, WhatsApp integration
+- [x] **Fase 5** — Flatfile database server-side, sinkronisasi API real-time
+- [x] **Fase 6a** — Admin Dashboard lengkap (6 halaman, auth, ekspor JSON/CSV)
+- [x] **Fase 6b** — Server-Side PDF generation (Puppeteer headless, retina quality)
 - [x] **Fase 6c** — Halaman Login/Register & Auth API multi-role
-- [ ] **Fase 7** — Migrasi ke Supabase (PostgreSQL + Auth JWT)
-- [ ] **Fase 8** — Notifikasi email otomatis & integrasi kalender konseling
-- [ ] **Fase 9** — Multi-tenant: support banyak sekolah, PWA offline
+
+### 🔮 Direncanakan (berdasarkan analisis kompetitor)
+- [ ] **Fase 7** — Migrasi ke Supabase (PostgreSQL + Auth JWT) + Database Karier 200+ profesi
+- [ ] **Fase 8** — UX enhancement: one-question UI, persona Holland Indonesia, multi-battery assessment
+- [ ] **Fase 9** — B2B multi-tenant sekolah: kode akses, AKPD digital, pricing tier
+- [ ] **Fase 10** — AI Career Counselor (Gemini API), portofolio web interaktif, PWA
+
+> 📄 Detail lengkap: [competitive_analysis_roadmap.md](./docs/competitive_analysis_roadmap.md) | [devplan.md](./docs/devplan.md)
 
 ---
 

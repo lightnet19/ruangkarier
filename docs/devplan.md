@@ -1,77 +1,210 @@
-# 🗺️ RuangKarier - Development Plan (Rencana Pengembangan)
+# 🗺️ RuangKarier — Development Plan (Rencana Pengembangan)
 
-**RuangKarier** adalah portal mandiri bimbingan karier kognitif adaptif berbasis tipe kepribadian RIASEC Holland dan intervensi strategi *Cognitive Behavioral Therapy (CBT)* untuk mengelola kecemasan masa depan pasca-kelulusan bagi siswa SMA/MA/SMK.
-
----
-
-## 🛠️ Stack Teknologi (Tech Stack)
-- **Framework Utama:** Next.js 16.2.6 (App Router) & React 19.
-- **Sistem Desain:** Tailwind CSS v4 + Vanilla CSS kustom (Google Fonts *Plus Jakarta Sans* & *Inter*).
-- **Manajemen State & Data:** `localStorage` (Offline-first stateless client storage) via custom hook `useLocalStorage.ts`.
-- **Ikonografi:** `lucide-react`.
-- **Ekspor Dokumen:** Mekanisme cetak browser teroptimasi CSS `@media print`.
+> **Versi:** 2.0 | **Diperbarui:** Mei 2026  
+> Dokumen ini adalah panduan tunggal untuk developer kontributor memahami arsitektur, status, dan arah pengembangan RuangKarier.  
+> Untuk analisis kompetitor dan detail roadmap lanjutan, lihat [`competitive_analysis_roadmap.md`](./competitive_analysis_roadmap.md).
 
 ---
 
-## 📐 Arsitektur Sistem & Alur Data
+## 🎯 Visi & Positioning
+
+**RuangKarier** adalah platform bimbingan karier digital yang dirancang untuk ekosistem layanan Bimbingan Konseling (BK) di sekolah menengah Indonesia.
+
+**Unique Value Proposition:**  
+*Satu-satunya platform yang menggabungkan asesmen RIASEC + CBT restrukturisasi kognitif + PDF portofolio formal + dashboard BK — dalam satu sistem, gratis untuk siswa, terjangkau untuk sekolah.*
+
+**Model Bisnis Target:** B2B Affordable (Sekolah) + B2C Gratis (Siswa)
+
+---
+
+## 🛠️ Stack Teknologi Saat Ini
+
+| Layer | Teknologi | Versi |
+|:---|:---|:---|
+| **Framework** | Next.js (App Router) | 16.2.6 |
+| **UI Runtime** | React | 19.2.4 |
+| **Bahasa** | TypeScript | 5.x |
+| **Styling** | TailwindCSS v4 + Custom CSS | 4.x |
+| **Ikon** | Lucide React | 1.17+ |
+| **PDF Engine** | Puppeteer (Headless Chromium) | ^25.1 |
+| **Database** | Flat-file JSON (`data/db.json`) | — |
+| **Font** | Plus Jakarta Sans, Inter (Google Fonts) | — |
+
+**Stack Target (Fase 7+):** Supabase (PostgreSQL) + Supabase Auth JWT + Vercel + Gemini API
+
+---
+
+## 📐 Arsitektur Sistem Saat Ini
 
 ```mermaid
 graph TD
-    A[Siswa: Landing Page] -->|Mulai Bimbingan| B[Langkah 1: Informed Consent]
+    A[Siswa: Landing Page] -->|Mulai / Register / Login| B[Langkah 1: Informed Consent]
     B --> C[Langkah 2: Skrining Hambatan Karier]
     C --> D[Langkah 3: Cek Stres & Alarm Kecemasan]
-    D -->|Kecemasan Tinggi >= 8| D1[AlertModal: Crisis Safety Card]
-    D1 -->|Siswa Lebih Tenang| E[Langkah 4: Kuis Minat RIASEC]
-    D -->|Kecemasan Stabil| E
-    E -->|Kalkulasi Skor RIASEC| F[Langkah 5: Jelajah Rekomendasi Karier & LKPD CBT]
-    F --> G[Langkah 6: Evaluasi Layanan UCE & RTL]
-    G -->|Kirim Portofolio| H[(localStorage DB)]
-    
-    I[Guru BK: Dasbor BK] -->|Tarik Data Siswa| H
-    I -->|Lihat Profil / RTL| J[Langkah 6: Portofolio Cetak Siswa]
-    I -->|Deteksi Red Flag| K[WhatsApp Follow-up BK]
+    D -->|Skor >= 8 atau Butuh Bantuan| D1[AlertModal: Crisis Safety Card]
+    D1 -->|Siswa Siap| E[Langkah 4: Kuis Minat RIASEC]
+    D -->|Stabil| E
+    E -->|Kalkulasi Skor Holland| F[Langkah 5: Jelajah Karier & LKPD CBT]
+    F --> G[Langkah 6: Evaluasi UCE & RTL]
+    G -->|POST ke API| H[(db.json — Flatfile DB)]
+
+    I[Guru BK: Login /login] -->|passcode: konselor123| J[Dashboard Konselor /counselor]
+    J -->|GET /api/counselor/students| H
+    J -->|Lihat Portofolio| K[/portfolio/id]
+
+    L[Admin: Login /login] -->|passcode: admin123| M[Dashboard Admin /admin]
+    M -->|GET /api/admin/data| H
+    M -->|Ekspor| N[JSON / CSV Download]
+
+    K -->|GET /api/portfolio/generate-pdf| O[Puppeteer PDF Engine]
+    O -->|Binary Stream| P[Browser Download]
 ```
 
 ---
 
-## 🏁 Milestones & Fase Pengembangan (Roadmap)
+## 🏁 Status Fase Pengembangan
 
-### Fase 1: Fondasi Proyek & Sistem Desain (Selesai ✓)
-- [x] Inisialisasi aplikasi Next.js (App Router).
-- [x] Konfigurasi tipografi Google Fonts dan variabel palet warna premium (*Navy Blue*, *Sage Green*, *Warm Beige*, *Accent Amber*) di `globals.css`.
-- [x] Pembuatan Utilitas *Glassmorphism*, transisi melayang (*interactive hover*), dan layout cetak.
-- [x] Penyusunan Shell layout global (`Navbar` & `Footer`) di `layout.tsx`.
+### ✅ Fase 1 — Fondasi & Sistem Desain (SELESAI)
+- [x] Inisialisasi Next.js App Router + TypeScript
+- [x] Konfigurasi Google Fonts (Plus Jakarta Sans & Inter)
+- [x] Palet warna premium: Navy Blue, Sage Green, Warm Beige, Accent Amber
+- [x] Utilitas glassmorphism, hover transitions, layout cetak di `globals.css`
+- [x] Shell global: Navbar, Footer, layout.tsx
 
-### Fase 2: Landing Page & Komponen Dasar (Selesai ✓)
-- [x] Halaman utama interaktif (`page.tsx`) dengan banner Hero dan dasbor 4 kartu panduan.
-- [x] Integrasi custom hook `useLocalStorage.ts` untuk sinkronisasi database lokal.
-- [x] Pembangunan komponen `RiasecChart` (SVG Radar Chart presisi tinggi).
-- [x] Pembuatan komponen `AlertModal` (Safety-Trigger krisis emosional siswa).
-- [x] Pembuatan repositori data statis `riasecQuestions.ts` (30 butir) dan `careerContent.ts` (6 jalur kelulusan).
+### ✅ Fase 2 — Landing Page & Komponen Dasar (SELESAI)
+- [x] Landing page interaktif (`page.tsx`) dengan hero & card dashboard
+- [x] Custom hook `useLocalStorage.ts` (offline-first state)
+- [x] Komponen `RiasecChart` (SVG Radar Chart presisi tinggi)
+- [x] Komponen `AlertModal` (safety trigger kecemasan)
+- [x] Data statis: `riasecQuestions.ts` (30 item), `careerContent.ts` (6 jalur)
 
-### Fase 3: Stepper Kelompok Siswa & Modul Rekomendasi (Selesai ✓)
-- [x] Pembangunan modul Stepper 6 langkah terstruktur di `/student/page.tsx` terlindung batas `<Suspense>`.
-- [x] Pembuatan formulir Skrining Hambatan Core Beliefs.
-- [x] Integrasi otomatis Safety Trigger deteksi kecemasan real-time pada Langkah 3.
-- [x] Pembangunan mesin hitung RIASEC & penentu 3 Huruf Kode Holland Utama (Top 3).
-- [x] Modul rekomendasi jalur pendidikan cerdas bersinkronisasi tag RIASEC & form LKPD CBT.
-- [x] Lembar evaluasi UCE (*Understanding*, *Comfort*, *Action*) & Rencana Tindak Lanjut (RTL).
+### ✅ Fase 3 — Wizard Siswa & Modul RIASEC (SELESAI)
+- [x] Stepper 7 langkah di `/student/page.tsx` dengan `<Suspense>` boundary
+- [x] Formulir Skrining Hambatan Core Beliefs (S1–S6)
+- [x] Safety Trigger deteksi kecemasan real-time
+- [x] Mesin hitung RIASEC + ekstraksi Holland Code Top 3
+- [x] Modul rekomendasi jalur dengan tag RIASEC + LKPD CBT
+- [x] Evaluasi UCE + Rencana Tindak Lanjut (RTL)
 
-### Fase 4: Portofolio Cetak & Dasbor Konselor BK (Selesai ✓)
-- [x] Halaman dynamic routing `/portfolio/[id]/page.tsx` dengan visual radar chart SVG dan tabel restrukturisasi kognitif CBT.
-- [x] Konfigurasi printer-friendly CSS layout untuk mengonversi halaman web ke PDF resmi sekolah via `window.print()`.
-- [x] Dasbor Guru BK di `/counselor/page.tsx` lengkap dengan panel KPI analitik, live alert feed Red-Flags, datatable, dan tombol simulasi data BK instan.
-- [x] Integrasi tombol WhatsApp BK Follow-up otomatis.
+### ✅ Fase 4 — Portofolio & Dashboard BK (SELESAI)
+- [x] Dynamic routing `/portfolio/[id]/page.tsx` (radar chart + CBT table)
+- [x] Print-friendly CSS layout (`@media print`, `.no-print`, `.print-card`)
+- [x] Dashboard Guru BK `/counselor` (KPI, Red-Flag feed, datatable)
+- [x] WhatsApp BK follow-up integration
 
-### Fase 5: Migrasi Flatfile Database Server-Side (Selesai ✓)
-- [x] Implementasi penyimpanan database flatfile server-side (`data/db.json`) dengan operasi baca/tulis atomik (`src/lib/flatfileDb.ts`).
-- [x] Pembuatan Next.js API Routes (`/api/student/submit`, `/api/counselor/students`, `/api/counselor/seed`) terproteksi sandi Guru BK.
-- [x] Sinkronisasi data real-time asinkron dari Stepper Siswa (Wizard) ke database server.
-- [x] Dasbor Guru BK (`/counselor`) terhubung langsung ke API server untuk visualisasi KPI, Red-Flags, dan manajemen data.
-- [x] Halaman Portofolio (`/portfolio/[id]`) dapat dimuat secara dinamis dari database server.
+### ✅ Fase 5 — Flatfile Database Server-Side (SELESAI)
+- [x] `data/db.json` + wrapper `src/lib/flatfileDb.ts`
+- [x] API Routes: `/api/student/submit`, `/api/counselor/students`, `/api/counselor/seed`
+- [x] Sinkronisasi real-time wizard → database server
+- [x] Dashboard BK & Admin terhubung ke API
 
-### Fase 6: Ekspor PDF Mandiri & Produksi (Direncanakan)
-- [ ] Integrasi engine `jspdf` atau `html2pdf` untuk mengunduh berkas portofolio PDF siswa secara langsung tanpa dialog cetak browser.
-- [ ] Integrasi sistem login akun Guru BK terproteksi sandi dinamis dan otentikasi siswa via NISN.
-- [ ] Deployment aplikasi ke platform cloud (Vercel/Netlify).
-- [ ] Uji coba beta skala terbatas dengan 10 konselor BK sekolah mitra.
+### ✅ Fase 6a — Admin Dashboard (SELESAI)
+- [x] 6 halaman Admin: utama, assessments, career-content, counseling-requests, reports, settings
+- [x] Ekspor laporan JSON & CSV
+- [x] Pengaturan sistem (nama sekolah, passcode) via `/admin/settings`
+
+### ✅ Fase 6b — Server-Side PDF Generation (SELESAI)
+- [x] Migrasi dari `html2canvas-pro` ke Puppeteer headless
+- [x] Endpoint `/api/portfolio/generate-pdf` (deviceScaleFactor: 2, print media emulation)
+- [x] Dependency cleanup (hapus 30+ library obsolet)
+- [x] Build produksi 100% stabil
+
+### ✅ Fase 6c — Login/Register & Auth Multi-Role (SELESAI)
+- [x] Halaman `/login` (tab: Siswa / Konselor / Admin)
+- [x] Halaman `/register` (daftar akun siswa baru)
+- [x] API: `/api/student/auth`, `/api/counselor/auth`
+- [x] Navbar diperbarui dengan link Login/Register
+- [x] Data dummy 3 siswa terseed di `db.json`
+
+---
+
+## 🔮 Roadmap Pengembangan (Fase 7–10)
+
+> Detail lengkap: [`competitive_analysis_roadmap.md`](./competitive_analysis_roadmap.md)
+
+### 🔵 Fase 7 — Database & Intelligence Layer (2–3 bulan)
+**Goal:** Konten karier paling relevan untuk siswa Indonesia
+
+- [ ] **7.1** Migrasi ke Supabase (PostgreSQL + Auth JWT + RLS)
+- [ ] **7.2** Database Karier Indonesia (200+ profesi dengan metadata lengkap)
+- [ ] **7.3** Database Jurusan & Kampus (150+ jurusan, PTN/PTS/PTKIN/Kedinasan)
+- [ ] **7.4** Interlinking: RIASEC Result → Jurusan → Karier → Kampus
+
+### 🟣 Fase 8 — UX Enhancement & Multi-battery Assessment (3–4 bulan)
+**Goal:** Pengalaman tes lebih kaya, engagement lebih tinggi
+
+- [ ] **8.1** UI RIASEC one-question-per-screen + sidebar navigator
+- [ ] **8.2** Rename Holland Code → Persona Indonesia (Si Kreator, Si Pemimpin, dll.)
+- [ ] **8.3** Tambah Tes Gaya Belajar VAK (18 item) + Tes Kepribadian DISC-lite
+- [ ] **8.4** Hasil RIASEC lebih kaya + share ke Instagram Stories
+
+### 🟠 Fase 9 — B2B Sekolah Multi-tenant (4–6 bulan)
+**Goal:** Platform resmi layanan BK yang bisa dilanggani sekolah
+
+- [ ] **9.1** Arsitektur multi-tenant (workspace terisolasi per sekolah)
+- [ ] **9.2** Dashboard Guru BK v2.0 (kode akses, tracking real-time, jadwal konseling)
+- [ ] **9.3** Administrasi BK digital (AKPD, SPB, laporan semester)
+- [ ] **9.4** Pricing: Gratis (30 siswa) / Sekolah Rp299k/bln / Dinas Custom
+
+### 🔴 Fase 10 — AI & Personalization (6–12 bulan)
+**Goal:** Platform karier terpintar di Indonesia
+
+- [ ] **10.1** AI Career Matching (Gemini API + collaborative filtering)
+- [ ] **10.2** AI Chatbot BK berbahasa Indonesia
+- [ ] **10.3** Portofolio web interaktif + QR Code di PDF
+- [ ] **10.4** Gamifikasi, PWA, email digest mingguan
+
+---
+
+## ⚡ Prioritas Sprint Berikutnya
+
+| # | Fitur | Estimasi | Impact |
+|:---:|:---|:---:|:---:|
+| 🔴 1 | Rename Holland Code → Persona Indonesia | 1 hari | ⭐⭐⭐⭐ |
+| 🔴 2 | Supabase setup + migration | 2 minggu | ⭐⭐⭐⭐⭐ |
+| 🔴 3 | Database karier 50+ profesi pertama | 1 minggu | ⭐⭐⭐⭐⭐ |
+| 🟠 4 | UI RIASEC one-question-per-screen | 3 hari | ⭐⭐⭐⭐ |
+| 🟠 5 | Interlinking hasil RIASEC → Karier | 1 minggu | ⭐⭐⭐⭐⭐ |
+| 🟡 6 | Tes Gaya Belajar VAK | 3 hari | ⭐⭐⭐ |
+| 🟢 7 | B2B multi-tenant architecture | 3 minggu | ⭐⭐⭐⭐⭐ |
+
+---
+
+## 🤝 Panduan Kontributor
+
+### Setup Development
+
+```bash
+git clone https://github.com/lightnet19/ruangkarier.git
+cd ruangkarier/ruangkarier-app
+npm install --legacy-peer-deps
+npm run dev
+```
+
+### Credential Akses (Development)
+
+| Role | URL | Credential |
+|:---|:---|:---|
+| Admin | `/login` → tab Admin | passcode: `admin123` |
+| Konselor | `/login` → tab Konselor | passcode: `konselor123` |
+| Siswa Demo | `/portfolio/mock_ahmad_fauzi` | langsung akses |
+
+### Konvensi Commit
+
+```
+feat:     Fitur baru
+fix:      Perbaikan bug
+docs:     Perubahan dokumentasi
+refactor: Refaktorisasi kode
+chore:    Konfigurasi/tooling
+```
+
+### Dokumen Referensi
+
+| Dokumen | Keterangan |
+|:---|:---|
+| [`competitive_analysis_roadmap.md`](./competitive_analysis_roadmap.md) | Analisis kompetitor + roadmap detail Fase 7–10 |
+| [`RuangKarier_PRD_Final.md`](./RuangKarier_PRD_Final.md) | Product Requirements Document |
+| [`devlog.md`](./devlog.md) | Log harian keputusan teknis |
+| [`design.md`](./design.md) | Panduan sistem desain visual |
+| [`RuangKarier_schema.sql`](./RuangKarier_schema.sql) | Skema database SQL referensi |
