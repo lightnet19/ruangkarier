@@ -63,12 +63,15 @@ graph TD
 - [x] Dasbor Guru BK di `/counselor/page.tsx` lengkap dengan panel KPI analitik, live alert feed Red-Flags, datatable, dan tombol simulasi data BK instan.
 - [x] Integrasi tombol WhatsApp BK Follow-up otomatis.
 
-### Fase 5: Integrasi Serverless & Database Awan (Direncanakan)
-- [ ] Migrasi database lokal `localStorage` ke tabel relasional **Supabase / PostgreSQL**.
-- [ ] Pembuatan modul autentikasi guru BK (Secure login) dan autentikasi akun siswa via NISN.
-- [ ] Sinkronisasi real-time Dasbor BK menggunakan Supabase Realtime Listener.
+### Fase 5: Migrasi Flatfile Database Server-Side (Selesai ✓)
+- [x] Implementasi penyimpanan database flatfile server-side (`data/db.json`) dengan operasi baca/tulis atomik (`src/lib/flatfileDb.ts`).
+- [x] Pembuatan Next.js API Routes (`/api/student/submit`, `/api/counselor/students`, `/api/counselor/seed`) terproteksi sandi Guru BK.
+- [x] Sinkronisasi data real-time asinkron dari Stepper Siswa (Wizard) ke database server.
+- [x] Dasbor Guru BK (`/counselor`) terhubung langsung ke API server untuk visualisasi KPI, Red-Flags, dan manajemen data.
+- [x] Halaman Portofolio (`/portfolio/[id]`) dapat dimuat secara dinamis dari database server.
 
 ### Fase 6: Ekspor PDF Mandiri & Produksi (Direncanakan)
 - [ ] Integrasi engine `jspdf` atau `html2pdf` untuk mengunduh berkas portofolio PDF siswa secara langsung tanpa dialog cetak browser.
+- [ ] Integrasi sistem login akun Guru BK terproteksi sandi dinamis dan otentikasi siswa via NISN.
 - [ ] Deployment aplikasi ke platform cloud (Vercel/Netlify).
 - [ ] Uji coba beta skala terbatas dengan 10 konselor BK sekolah mitra.
