@@ -6,6 +6,33 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Implementasi Admin Dashboard (Fase 6 — Manajemen Sistem)
+- **Aktivitas:** Membangun Admin Dashboard lengkap di `/admin` dengan sistem autentikasi, analitik terpusat, manajemen data siswa, pratinjau konten karier, manajemen permintaan konseling, dan ekspor laporan.
+- **Implementasi & Perubahan:**
+  1. **Skema Database (`src/lib/flatfileDb.ts`):** Menambahkan field `adminSettings` (passcode + updatedAt) ke `DbSchema` dan `defaultData` agar kompatibel secara backward dengan `db.json` lama.
+  2. **db.json:** Menyuntikkan blok `adminSettings` dengan *default passcode* `ADMIN2026` ke data live.
+  3. **API Backend — Admin Authentication (`/api/admin/auth`):**
+     - `POST`: Memvalidasi passcode admin terhadap `db.json`.
+     - `PATCH`: Memperbarui passcode admin dengan verifikasi *passcode lama*.
+  4. **API Backend — Admin Data (`/api/admin/data`):**
+     - `GET`: Mengembalikan statistik agregat (KPI), daftar lengkap siswa, daftar permintaan konseling, dan pengaturan sistem.
+     - `DELETE`: Menghapus data satu siswa (by ID) atau seluruh siswa.
+     - `PATCH`: Memperbarui nama sekolah dan passcode Guru BK.
+  5. **API Backend — Admin Reports (`/api/admin/reports`):** Mengekspor data dalam format `JSON` (download langsung) atau `CSV` (kompatibel Excel/Sheets).
+  6. **Admin Layout (`src/app/admin/layout.tsx`):** Membangun layout terpisah dari publik — sidebar navigasi premium (dark mode), autentikasi *gate* via session storage, *mobile hamburger menu*, dan sistem logout.
+  7. **6 Halaman Admin:**
+     - `/admin` — Dashboard utama: KPI cards, visualisasi reduksi kecemasan, distribusi RIASEC, menu cepat, dan pratinjau permintaan konseling terbaru.
+     - `/admin/assessments` — Tabel data siswa lengkap: sortable, filterable by red flag/status, aksi hapus & lihat portofolio.
+     - `/admin/career-content` — Pratinjau 6 konten jalur karier (dari `careerContent.ts`) dalam tampilan kartu premium dengan RIASEC tags.
+     - `/admin/counseling-requests` — Daftar RTL siswa dengan detektor red flag, delta kecemasan, catatan diskusi, dan link portofolio.
+     - `/admin/reports` — Ringkasan analitik dan tombol ekspor JSON/CSV.
+     - `/admin/settings` — Form edit nama sekolah, passcode BK, dan ganti passcode Admin.
+  8. **Uji Kompilasi:** Build produksi berhasil dengan `✓ Compiled successfully` — 0 error TypeScript pada 18 rute.
+- **Keputusan Teknis:**
+  - Autentikasi Admin menggunakan `sessionStorage` (bukan cookie) untuk menyederhanakan prototipe. Passcode dikirim via `x-admin-passcode` header atau query param.
+  - Admin Layout adalah *separate Next.js layout* sehingga tidak mempengaruhi navbar/footer publik.
+  - Konten karier pada admin hanya *read-only preview* (statis), dengan catatan bahwa migrasi ke CRUD database dapat dilakukan di fase produksi.
+
 ### [2026-05-30] - Integrasi Logo Resmi (Final) & Ikon Aplikasi RuangKarier
 - **Aktivitas:** Mengintegrasikan aset identitas visual resmi `Logo Ruang Karier (Final).png` dan `Icon Ruang Karier.png` ke seluruh antarmuka web app dan metadata sistem.
 - **Implementasi & Perubahan:**

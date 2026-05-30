@@ -65,6 +65,10 @@ export interface DbSchema {
     schoolName: string;
     updatedAt: string;
   };
+  adminSettings: {
+    passcode: string;
+    updatedAt: string;
+  };
 }
 
 // Ensure the db.json file and directory exist
@@ -79,6 +83,10 @@ async function ensureDbExists() {
       counselorSettings: {
         passcode: "BK2026",
         schoolName: "SMA Negeri Pilihan",
+        updatedAt: new Date().toISOString()
+      },
+      adminSettings: {
+        passcode: "ADMIN2026",
         updatedAt: new Date().toISOString()
       }
     };
