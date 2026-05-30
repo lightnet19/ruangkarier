@@ -6,6 +6,13 @@ Berkas ini mencatat peristiwa penting, perbaikan *bug*, serta keputusan teknis u
 
 ## 🪵 Kronologi Log Pengembang
 
+### [2026-05-30] - Restrukturisasi Direktori Dokumen & Sinkronisasi GitHub
+- **Aktivitas:** Mengorganisasi seluruh dokumen eksternal ke dalam subfolder `/docs`, menyalin dokumen blueprint esensial, dan melakukan sinkronisasi dengan GitHub.
+- **Implementasi & Perubahan:**
+  1. **Restrukturisasi Direktori (`/docs`):** Memindahkan semua file dokumentasi (.md, .docx, .sql, .json, .png, .jpeg) dari root direktori ke `/docs` agar folder proyek tetap bersih dan modular.
+  2. **Penyalinan Blueprint Penting:** Menyertakan `implementation_plan.md` (Rencana Aksi Sistem Desain dan Arsitektur) dan `walkthrough_results.md` (Catatan hasil kompilasi produksi dan petunjuk uji coba cepat) ke dalam folder `/docs`.
+  3. **Konfigurasi & Push Git:** Mengatur identitas pengarang Git lokal (`lightnet19`) dan melakukan commit serta push sukses ke cabang `main` di GitHub. Repositori dan direktori lokal kini berstatus 100% bersih (*clean*).
+
 ### [2026-05-30] - Finalisasi Fitur & Uji Kompilasi Produksi
 - **Aktivitas:** Mengonfigurasi antarmuka cetak, membenahi kompatibilitas Turbopack, dan menuntaskan tipe data TypeScript.
 - **Bug Yang Diatasi:**
