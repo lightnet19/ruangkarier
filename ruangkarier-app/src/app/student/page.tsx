@@ -295,7 +295,7 @@ function StudentWizardInner() {
     }
   };
 
-  // Save current step data to local storage array
+  // Save current step data to local storage array and sync to Flatfile DB
   const saveCurrentSessionState = (partialData: Partial<StudentSession>) => {
     try {
       const allSubmissions = [...sessions];
@@ -327,6 +327,15 @@ function StudentWizardInner() {
       
       // Also write active session parameters to a separate key for easy access
       localStorage.setItem('ruangkarier_student_session', JSON.stringify(sessionToSave));
+
+      // Asynchronously sync to server Flatfile DB
+      fetch('/api/student/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sessionToSave)
+      }).catch(err => console.error("Error syncing to Flatfile DB:", err));
     } catch (e) {
       console.error("Error saving state to localStorage:", e);
     }
@@ -443,7 +452,7 @@ function StudentWizardInner() {
   };
 
   // Step 6 final submit and export triggers
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const finalEval = {
       understandingScore: evalUnderstanding,
       comfortScore: evalComfort,
@@ -455,13 +464,50 @@ function StudentWizardInner() {
       sentAt: new Date().toISOString()
     };
 
-    saveCurrentSessionState({
-      evaluation: finalEval
-    });
+    // Construct the complete session object
+    const allSubmissions = [...sessions];
+    let existingIndex = allSubmissions.findIndex(s => s.id === currentSessionId);
+    
+    const sessionToSave: StudentSession = existingIndex >= 0 
+      ? { ...allSubmissions[existingIndex] } 
+      : {
+          id: currentSessionId,
+          createdAt: new Date().toISOString()
+        };
 
-    // Success alert with nice routing
-    alert("Portofolio Karier Anda berhasil dikirim ke Dasbor Guru BK! Anda akan diarahkan ke halaman portofolio mandiri.");
-    router.push(`/portfolio/${currentSessionId}`);
+    sessionToSave.evaluation = finalEval;
+
+    // Save to local storage as fallback
+    if (existingIndex >= 0) {
+      allSubmissions[existingIndex] = sessionToSave;
+    } else {
+      allSubmissions.push(sessionToSave);
+    }
+    setSessions(allSubmissions);
+    localStorage.setItem('ruangkarier_student_session', JSON.stringify(sessionToSave));
+
+    try {
+      // Sync final state directly and wait for confirmation
+      const res = await fetch('/api/student/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sessionToSave)
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      // Success alert with nice routing
+      alert("Portofolio Karier Anda berhasil dikirim ke Dasbor Guru BK! Anda akan diarahkan ke halaman portofolio mandiri.");
+      router.push(`/portfolio/${currentSessionId}`);
+    } catch (error) {
+      console.error("Error submitting final evaluation:", error);
+      alert("Portofolio disimpan secara lokal. Namun gagal disinkronkan ke server. Anda akan tetap diarahkan ke halaman portofolio.");
+      router.push(`/portfolio/${currentSessionId}`);
+    }
   };
 
   // Helper: filter career pathways by RIASEC Top 3 letters

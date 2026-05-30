@@ -84,13 +84,36 @@ export default function StudentPortfolio({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (sessions.length > 0 && id) {
-      const match = sessions.find(s => s.id === id);
-      if (match) {
-        setSession(match);
+    async function loadSession() {
+      try {
+        setIsLoading(true);
+        // Try local storage first
+        if (sessions.length > 0 && id) {
+          const match = sessions.find(s => s.id === id);
+          if (match) {
+            setSession(match);
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // Fallback or main source: fetch from server-side database
+        if (id) {
+          const res = await fetch(`/api/student/submit?id=${id}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSession(data);
+          } else {
+            console.warn("Portfolio not found in server DB either");
+          }
+        }
+      } catch (err) {
+        console.error("Error loading portfolio session:", err);
+      } finally {
+        setIsLoading(false);
       }
     }
-    setIsLoading(false);
+    loadSession();
   }, [id, sessions]);
 
   const handlePrint = () => {

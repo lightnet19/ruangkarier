@@ -1,9 +1,9 @@
 # 👑 Product Requirements Document (PRD) Final — RuangKarier
 
 > **Versi:** 1.0 (Final Production Blueprint)  
-> **Status:** Siap Produksi / Siap Migrasi Supabase & PDF Engine  
+> **Status:** Siap Produksi / Siap Migrasi Flatfile Database & PDF Engine  
 > **Author:** Antigravity AI  
-> **Deskripsi:** Dokumen acuan tunggal (*Single Source of Truth*) yang menggabungkan sintesis konseptual, arsitektur file Next.js yang sudah terimplementasi, skema database PostgreSQL/Supabase komprehensif, logika fungsional, serta rencana aksi migrasi serverless untuk kelanjutan proyek.
+> **Deskripsi:** Dokumen acuan tunggal (*Single Source of Truth*) yang menggabungkan sintesis konseptual, arsitektur file Next.js yang sudah terimplementasi, skema database Flatfile JSON komprehensif, logika fungsional, serta rencana aksi migrasi flatfile database untuk kelanjutan proyek.
 
 ---
 
@@ -99,290 +99,403 @@ graph TD
 
 ---
 
-## 📊 5. Skema Relasional Database PostgreSQL & Supabase
+## 📊 5. Skema Struktur Database Flatfile JSON
 
-Untuk melanjutkan integrasi database online penuh di **Phase 5**, berikut skema skrip SQL PostgreSQL lengkap yang kompatibel dengan tabel data dan model relasional di dalam aplikasi:
+Untuk meminimalkan ketergantungan pada infrastruktur pihak ketiga (seperti Supabase/PostgreSQL) dan menjaga proyek tetap portabel serta hemat biaya sebagai purwarupa (*prototype*), platform **RuangKarier** menggunakan database berbasis berkas datar (**Flatfile Database**) dalam bentuk file JSON tunggal: `data/db.json` di root direktori proyek.
 
-```sql
--- ==========================================
--- 1. TABEL UTAMA PENGGUNA (USERS)
--- ==========================================
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role VARCHAR(20) NOT NULL CHECK (role IN ('student', 'counselor', 'admin')),
-  name VARCHAR(150) NOT NULL,
-  email VARCHAR(150) UNIQUE,
-  school VARCHAR(150),
-  class_name VARCHAR(50),
-  student_code VARCHAR(50), -- NISN / Kode Akses Kelas
-  session_code VARCHAR(20),  -- Menghubungkan bimbingan massal kelas
-  status VARCHAR(20) NOT NULL DEFAULT 'active',
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+Struktur data JSON ini didesain agar kompatibel penuh dengan state visual pengerjaan siswa dan antarmuka Guru BK di dasbor konselor.
 
--- ==========================================
--- 2. INFORMED CONSENT & KELUHAN AWAL
--- ==========================================
-CREATE TABLE consent_sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  consent_checked BOOLEAN NOT NULL DEFAULT FALSE,
-  confidence_score INTEGER CHECK (confidence_score BETWEEN 1 AND 10),
-  main_problem TEXT,
-  preparation_notes TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+### 5.1. Skema Struktur Berkas `data/db.json`
 
--- ==========================================
--- 3. JAWABAN SKRINING HAMBATAN KARIER (0 - 4)
--- ==========================================
-CREATE TABLE screening_responses (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  item_code VARCHAR(50) NOT NULL,
-  category VARCHAR(50) NOT NULL, -- Internal / Eksternal
-  score INTEGER NOT NULL CHECK (score BETWEEN 0 AND 4),
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+Berikut adalah cetak biru format penyimpanan berkas JSON (`data/db.json`):
 
--- ==========================================
--- 4. LOG DETEKSI DINI KECEMASAN (RED FLAGS)
--- ==========================================
-CREATE TABLE anxiety_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  academic_pressure INTEGER CHECK (academic_pressure BETWEEN 1 AND 10),
-  graduation_anxiety INTEGER CHECK (graduation_anxiety BETWEEN 1 AND 10),
-  needs_immediate_help BOOLEAN DEFAULT FALSE,
-  triggered_alert BOOLEAN DEFAULT FALSE,
-  counselor_notified BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 5. JAWABAN INSTRUMEN KUIS RIASEC (1 - 5)
--- ==========================================
-CREATE TABLE riasec_responses (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  item_no INTEGER NOT NULL CHECK (item_no BETWEEN 1 AND 30),
-  dimension CHAR(1) NOT NULL CHECK (dimension IN ('R','I','A','S','E','C')),
-  score INTEGER NOT NULL CHECK (score BETWEEN 1 AND 5),
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 6. HASIL AKUMULATIF TES RIASEC
--- ==========================================
-CREATE TABLE riasec_results (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  r_total INTEGER NOT NULL DEFAULT 0,
-  i_total INTEGER NOT NULL DEFAULT 0,
-  a_total INTEGER NOT NULL DEFAULT 0,
-  s_total INTEGER NOT NULL DEFAULT 0,
-  e_total INTEGER NOT NULL DEFAULT 0,
-  c_total INTEGER NOT NULL DEFAULT 0,
-  top3_code VARCHAR(10) NOT NULL,
-  summary_text TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 7. KONTEN MODUL JELAJAH KARIER
--- ==========================================
-CREATE TABLE career_modules (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title VARCHAR(150) NOT NULL,
-  module_type VARCHAR(30) NOT NULL CHECK (module_type IN ('ptn','pts','ptkin','kedinasan','kerja','wirausaha')),
-  riasec_tags VARCHAR(30), -- Menghubungkan kecocokan RIASEC
-  content TEXT NOT NULL,   -- Data Markdown / HTML ringkasan jalur
-  media_url TEXT,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  sort_order INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 8. LEMBAR KERJA LKPD DIGITAL (CBT STRATEGI)
--- ==========================================
-CREATE TABLE action_plans (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  goal TEXT NOT NULL,
-  challenge_level INTEGER CHECK (challenge_level BETWEEN 1 AND 10),
-  emotion_text TEXT,
-  negative_thought TEXT,
-  evidence_negative TEXT,
-  counter_evidence TEXT,
-  alternative_view TEXT,
-  new_belief TEXT,
-  top_actions JSONB NOT NULL DEFAULT '[]'::jsonb,      -- Kumpulan komitmen aksi
-  monthly_actions JSONB NOT NULL DEFAULT '[]'::jsonb,  -- Tiga target utama
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 9. EVALUASI LAYANAN BIMBINGAN UCE
--- ==========================================
-CREATE TABLE evaluations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  understanding_score INTEGER CHECK (understanding_score BETWEEN 1 AND 10),
-  comfort_score INTEGER CHECK (comfort_score BETWEEN 1 AND 10),
-  action_score INTEGER CHECK (action_score BETWEEN 1 AND 10),
-  notes TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- 10. ANTRIAN PERMINTAAN KONSELING LAYANAN RTL
--- ==========================================
-CREATE TABLE counseling_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  reason TEXT NOT NULL,
-  priority VARCHAR(20) NOT NULL DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
-  status VARCHAR(20) NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'scheduled', 'done', 'cancelled')),
-  counselor_notes TEXT,
-  scheduled_at TIMESTAMP,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
--- ==========================================
--- INDEKS EFISIENSI QUERY (DATABASE INDEXES)
--- ==========================================
-CREATE INDEX idx_consent_user_id ON consent_sessions(user_id);
-CREATE INDEX idx_screening_user_id ON screening_responses(user_id);
-CREATE INDEX idx_anxiety_logs_user_id ON anxiety_logs(user_id);
-CREATE INDEX idx_riasec_user_id ON riasec_responses(user_id);
-CREATE INDEX idx_riasec_results_user_id ON riasec_results(user_id);
-CREATE INDEX idx_action_plans_user_id ON action_plans(user_id);
-CREATE INDEX idx_evaluations_user_id ON evaluations(user_id);
-CREATE INDEX idx_counseling_requests_user_id ON counseling_requests(user_id);
+```json
+{
+  "students": [
+    {
+      "id": "std_229bd926_1d4e",
+      "profile": {
+        "name": "Budi Santoso",
+        "nisn": "0081234567",
+        "className": "XII MIPA 1",
+        "school": "SMA Negeri Pilihan",
+        "initialConfidence": 4,
+        "mainProblem": "Ragu memilih jurusan Kuliah Teknik Elektro karena tekanan ekonomi keluarga.",
+        "preparationNotes": "Ingin bekerja paruh waktu sembari kuliah jika memungkinkan."
+      },
+      "consent": {
+        "consentChecked": true,
+        "timestamp": "2026-05-30T08:15:00.000Z"
+      },
+      "screening": {
+        "internalBarriers": 12,
+        "externalBarriers": 8,
+        "responses": {
+          "IB_01": 2,
+          "IB_02": 3,
+          "EB_01": 1
+        }
+      },
+      "anxietyLog": {
+        "academicPressure": 9,
+        "graduationAnxiety": 8,
+        "needsImmediateHelp": true,
+        "triggeredAlert": true,
+        "counselorNotified": false,
+        "timestamp": "2026-05-30T08:17:00.000Z"
+      },
+      "riasec": {
+        "totals": {
+          "R": 12,
+          "I": 24,
+          "A": 15,
+          "S": 22,
+          "E": 18,
+          "C": 14
+        },
+        "hollandCode": "ISC",
+        "timestamp": "2026-05-30T08:22:00.000Z"
+      },
+      "actionPlan": {
+        "goal": "Menjadi Software Engineer Rumpun Teknik / IT",
+        "challengeLevel": 8,
+        "emotions": ["Khawatir", "Antusias"],
+        "negativeThought": "Saya takut gagal lolos UTBK dan membebani finansial orang tua jika kuliah swasta.",
+        "evidenceNegative": "Biaya kuliah swasta sangat mahal dan persaingan beasiswa ketat.",
+        "counterEvidence": "Ada skema KIP-Kuliah dan program magang berbayar yang bisa diambil.",
+        "alternativeView": "Saya akan berusaha maksimal di ujian negeri dan mencari alternatif beasiswa swasta sejak awal.",
+        "newBelief": "Saya memiliki kecerdasan untuk berjuang dan opsi pembiayaan kuliah sangat beragam jika proaktif.",
+        "commitments": [
+          "Mempelajari materi UTBK kuantitatif setiap hari selama 30 menit",
+          "Mencari 3 informasi beasiswa penuh universitas swasta sebagai cadangan",
+          "Berdiskusi secara terbuka dengan Guru BK sekolah mengenai opsi KIP-Kuliah"
+        ],
+        "monthlyGoals": [
+          "Bulan 1: Menyelesaikan rangkuman materi dasar saintek",
+          "Bulan 2: Mengikuti uji coba (tryout) UTBK mandiri",
+          "Bulan 3: Mendaftar jalur seleksi nasional SNBP/SNBT"
+        ]
+      },
+      "evaluation": {
+        "understanding": 9,
+        "comfort": 8,
+        "action": 9,
+        "notes": "Konseling adaptif ini sangat membantu mengurangi kecemasan saya secara logis.",
+        "timestamp": "2026-05-30T08:25:00.000Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-05-30T08:15:00.000Z",
+      "updatedAt": "2026-05-30T08:25:00.000Z"
+    }
+  ],
+  "counselorSettings": {
+    "passcode": "BK2026",
+    "schoolName": "SMA Negeri Pilihan",
+    "updatedAt": "2026-05-30T08:00:00.000Z"
+  }
+}
 ```
 
 ---
 
 ## ⚡ 6. Blueprints Teknis Rencana Tindak Lanjut (Langkah Kelanjutan)
 
-Berikut adalah panduan kode dan instruksi teknis langkah-demi-langkah bagi pengembang untuk menerapkan **Fase 5 (Supabase)** dan **Fase 6 (PDF Engine)** secara mulus:
+Berikut adalah panduan kode dan instruksi teknis langkah-demi-langkah bagi pengembang untuk menerapkan **Fase 5 (Flatfile Database)** dan **Fase 6 (PDF Engine)** secara mulus:
 
-### ⚡ 6.1. Langkah Migrasi Database Online dengan Supabase
+### ⚡ 6.1. Langkah Migrasi Database Flatfile JSON
 
-Untuk melepaskan ketergantungan pada `localStorage` agar Guru BK dapat menerima data pengerjaan siswa secara real-time dari komputer terpisah:
+Untuk menggantikan `localStorage` agar Guru BK dapat menarik dan memantau data pengerjaan siswa secara terpusat dari komputer terpisah (server lokal/VPS yang sama), ikuti blueprint arsitektur serverless API flatfile berikut:
 
-#### 1. Setup Supabase Client
-Instal dependensi `@supabase/supabase-js` pada folder `ruangkarier-app`:
-```bash
-npm install @supabase/supabase-js
-```
+#### 1. Pembuatan Helper Utility Flatfile (`src/lib/flatfileDb.ts`)
 
-Buat file konfigurasi `src/lib/supabaseClient.ts`:
-```typescript
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-```
-
-#### 2. Rencana Pemetaan Sinkronisasi Data Siswa
-Ketika siswa menekan tombol **"KIRIM PORTOFOLIO KE GURU BK"** di Langkah 6 (`student/page.tsx`), buat fungsi pengiriman asinkron untuk menggantikan `localStorage.setItem`:
+Buat berkas server-side utility untuk membaca, menulis, dan menginisialisasi berkas JSON secara aman dari sisi API Next.js:
 
 ```typescript
-import { supabase } from '@/lib/supabaseClient';
+import fs from 'fs/promises';
+import path from 'path';
 
-async function uploadStudentSession(studentData: any) {
+// Direktori tempat db.json disimpan di luar folder build
+const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
+
+// Interface Struktur Database
+export interface StudentData {
+  id: string;
+  profile: {
+    name: string;
+    nisn: string;
+    className: string;
+    school: string;
+    initialConfidence: number;
+    mainProblem: string;
+    preparationNotes: string;
+  };
+  consent?: {
+    consentChecked: boolean;
+    timestamp: string;
+  };
+  screening?: {
+    internalBarriers: number;
+    externalBarriers: number;
+    responses: Record<string, number>;
+  };
+  anxietyLog?: {
+    academicPressure: number;
+    graduationAnxiety: number;
+    needsImmediateHelp: boolean;
+    triggeredAlert: boolean;
+    counselorNotified: boolean;
+    timestamp: string;
+  };
+  riasec?: {
+    totals: Record<string, number>;
+    hollandCode: string;
+    timestamp: string;
+  };
+  actionPlan?: {
+    goal: string;
+    challengeLevel: number;
+    emotions: string[];
+    negativeThought: string;
+    evidenceNegative: string;
+    counterEvidence: string;
+    alternativeView: string;
+    newBelief: string;
+    commitments: string[];
+    monthlyGoals: string[];
+  };
+  evaluation?: {
+    understanding: number;
+    comfort: number;
+    action: number;
+    notes: string;
+    timestamp: string;
+  };
+  status: 'active' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DbSchema {
+  students: StudentData[];
+  counselorSettings: {
+    passcode: string;
+    schoolName: string;
+    updatedAt: string;
+  };
+}
+
+// Inisialisasi berkas database kosong jika tidak ada
+async function ensureDbExists() {
   try {
-    // 1. Insert User & Profil
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .insert([{
-        name: studentData.profile.name,
-        role: 'student',
-        class_name: studentData.profile.className,
-        school: 'SMA / MA Negeri Pilihan',
-        student_code: studentData.profile.nisn || studentData.id
-      }])
-      .select()
-      .single();
+    const dir = path.dirname(DB_PATH);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.access(DB_PATH);
+  } catch {
+    const defaultData: DbSchema = {
+      students: [],
+      counselorSettings: {
+        passcode: "BK2026",
+        schoolName: "SMA Negeri Pilihan",
+        updatedAt: new Date().toISOString()
+      }
+    };
+    await fs.writeFile(DB_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
+  }
+}
 
-    if (userError) throw userError;
+// Membaca Database Flatfile
+export async function readDb(): Promise<DbSchema> {
+  await ensureDbExists();
+  const rawData = await fs.readFile(DB_PATH, 'utf-8');
+  return JSON.parse(rawData) as DbSchema;
+}
 
-    // 2. Insert Keluhan Awal (Consent)
-    await supabase.from('consent_sessions').insert([{
-      user_id: user.id,
-      consent_checked: true,
-      confidence_score: parseInt(studentData.profile.initialConfidence),
-      main_problem: studentData.profile.mainProblem,
-      preparation_notes: studentData.profile.preparationNotes
-    }]);
+// Menulis kembali ke Database Flatfile
+export async function writeDb(data: DbSchema): Promise<void> {
+  await ensureDbExists();
+  // Thread-safe atomic write menggunakan file sementara (.tmp)
+  const tmpPath = `${DB_PATH}.tmp`;
+  await fs.writeFile(tmpPath, JSON.stringify(data, null, 2), 'utf-8');
+  await fs.rename(tmpPath, DB_PATH);
+}
+```
 
-    // 3. Insert Log Kecemasan (Safety Log)
-    await supabase.from('anxiety_logs').insert([{
-      user_id: user.id,
-      academic_pressure: parseInt(studentData.profile.academicPressure || 0),
-      graduation_anxiety: parseInt(studentData.profile.graduationAnxiety || 0),
-      needs_immediate_help: studentData.profile.needsImmediateHelp === 'yes',
-      triggered_alert: parseInt(studentData.profile.academicPressure || 0) + parseInt(studentData.profile.graduationAnxiety || 0) >= 8
-    }]);
+#### 2. Pembuatan API Route Handler Next.js
 
-    // 4. Insert Hasil RIASEC
-    await supabase.from('riasec_results').insert([{
-      user_id: user.id,
-      r_total: studentData.riasecTotals.R,
-      i_total: studentData.riasecTotals.I,
-      a_total: studentData.riasecTotals.A,
-      s_total: studentData.riasecTotals.S,
-      e_total: studentData.riasecTotals.E,
-      c_total: studentData.riasecTotals.C,
-      top3_code: studentData.hollandCode,
-      summary_text: `Menyukai kepribadian dominan tipe ${studentData.hollandCode}`
-    }]);
+Buat endpoint API untuk menerima data dari formulir wizard siswa:
 
-    // 5. Insert LKPD Action Plan
-    await supabase.from('action_plans').insert([{
-      user_id: user.id,
-      goal: studentData.actionPlan.goal,
-      challenge_level: parseInt(studentData.actionPlan.challengeLevel),
-      emotion_text: studentData.actionPlan.emotions.join(', '),
-      negative_thought: studentData.actionPlan.negativeThought,
-      evidence_negative: studentData.actionPlan.evidenceNegative,
-      counter_evidence: studentData.actionPlan.counterEvidence,
-      alternative_view: studentData.actionPlan.alternativeView,
-      new_belief: studentData.actionPlan.newBelief,
-      top_actions: studentData.actionPlan.commitments,
-      monthly_actions: studentData.actionPlan.monthlyGoals
-    }]);
+##### A. Endpoint Menyimpan Data Siswa (`src/app/api/student/submit/route.ts`)
 
-    // 6. Insert Evaluasi
-    await supabase.from('evaluations').insert([{
-      user_id: user.id,
-      understanding_score: parseInt(studentData.evaluation.understanding),
-      comfort_score: parseInt(studentData.evaluation.comfort),
-      action_score: parseInt(studentData.evaluation.action),
-      notes: studentData.evaluation.notes
-    }]);
+```typescript
+import { NextResponse } from 'next/server';
+import { readDb, writeDb, StudentData } from '@/lib/flatfileDb';
 
-    console.log("Data pengerjaan siswa sukses diunggah ke database cloud!");
-  } catch (error) {
-    console.error("Terjadi kegagalan unggah data ke Supabase:", error);
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, profile, consent, screening, anxietyLog, riasec, actionPlan, evaluation, status } = body;
+
+    if (!id || !profile?.name) {
+      return NextResponse.json({ error: 'ID siswa dan nama lengkap wajib diisi.' }, { status: 400 });
+    }
+
+    const db = await readDb();
+    const nowStr = new Date().toISOString();
+
+    const existingIndex = db.students.findIndex(s => s.id === id);
+
+    const newStudentData: StudentData = {
+      id,
+      profile,
+      consent,
+      screening,
+      anxietyLog,
+      riasec,
+      actionPlan,
+      evaluation,
+      status: status || 'active',
+      createdAt: existingIndex > -1 ? db.students[existingIndex].createdAt : nowStr,
+      updatedAt: nowStr
+    };
+
+    if (existingIndex > -1) {
+      db.students[existingIndex] = newStudentData;
+    } else {
+      db.students.push(newStudentData);
+    }
+
+    await writeDb(db);
+    return NextResponse.json({ message: 'Data portofolio sukses disimpan!', data: newStudentData });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 ```
 
-#### 3. Keamanan Database RLS (Row Level Security)
-Di portal Supabase, aktifkan **Row Level Security (RLS)** pada setiap tabel:
-*   Tabel `users`, `career_modules`: Dapat dibaca secara publik oleh anon.
-*   Tabel asesmen & detail LKPD (`action_plans`, `riasec_results`, `anxiety_logs`):
-    *   **INSERT:** Diizinkan secara anonim/siswa yang sedang mengisi.
-    *   **SELECT:** Hanya diizinkan bagi pengguna terotentikasi (*Authenticated*) yang bertindak sebagai Guru BK / Konselor (`role == 'counselor'`).
+##### B. Endpoint Guru BK Mengambil Data Siswa (`src/app/api/counselor/students/route.ts`)
+
+```typescript
+import { NextResponse } from 'next/server';
+import { readDb } from '@/lib/flatfileDb';
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const passcode = searchParams.get('passcode');
+
+    const db = await readDb();
+
+    // Proteksi sandi aksesBK sederhana
+    if (!passcode || passcode !== db.counselorSettings.passcode) {
+      return NextResponse.json({ error: 'Kode sandi Guru BK tidak valid!' }, { status: 403 });
+    }
+
+    return NextResponse.json({ 
+      schoolName: db.counselorSettings.schoolName,
+      students: db.students 
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+```
+
+##### C. Endpoint Seeder Simulasi Data Guru BK (`src/app/api/counselor/seed/route.ts`)
+
+```typescript
+import { NextResponse } from 'next/server';
+import { readDb, writeDb } from '@/lib/flatfileDb';
+
+export async function POST(request: Request) {
+  try {
+    const db = await readDb();
+    
+    // Tambahkan minimal 3 dummy data simulasi beranekaragam untuk Guru BK
+    const dummyStudents = [
+      {
+        id: "std_mock_01",
+        profile: {
+          name: "Rian Hidayat",
+          nisn: "0083214569",
+          className: "XII IPS 2",
+          school: db.counselorSettings.schoolName,
+          initialConfidence: 3,
+          mainProblem: "Kurang percaya diri menghadapi seleksi kerja setelah lulus SMK/SMA.",
+          preparationNotes: "Ingin bekerja membantu keuangan adik-adiknya."
+        },
+        consent: { consentChecked: true, timestamp: new Date().toISOString() },
+        anxietyLog: {
+          academicPressure: 9,
+          graduationAnxiety: 9,
+          needsImmediateHelp: true,
+          triggeredAlert: true,
+          counselorNotified: false,
+          timestamp: new Date().toISOString()
+        },
+        riasec: {
+          totals: { R: 25, I: 12, A: 10, S: 18, E: 24, C: 15 },
+          hollandCode: "RES",
+          timestamp: new Date().toISOString()
+        },
+        actionPlan: {
+          goal: "Membuka bengkel motor mandiri (Wirausaha)",
+          challengeLevel: 7,
+          emotions: ["Takut", "Bersemangat"],
+          negativeThought: "Saya tidak memiliki modal sepeser pun untuk membeli peralatan.",
+          evidenceNegative: "Sewa ruko dan alat perkakas bengkel sangat mahal.",
+          counterEvidence: "Saya bisa mulai magang dulu atau bermitra dengan bengkel lain untuk berbagi tempat.",
+          alternativeView: "Saya akan mengumpulkan tabungan dari bekerja di bengkel lain sembari belajar manajemen.",
+          newBelief: "Modal terbesar adalah keahlian praktik saya; uang bisa dicari bertahap.",
+          commitments: ["Mengikuti magang BLK selama 3 bulan", "Menyusun rincian kebutuhan alat paling dasar", "Membantu bengkel paman saat liburan sekolah"],
+          monthlyGoals: ["Bulan 1: Lolos sertifikasi BLK", "Bulan 2: Membeli toolkit dasar", "Bulan 3: Mulai servis panggilan keliling"]
+        },
+        evaluation: { understanding: 8, comfort: 9, action: 9, notes: "Membantu!", timestamp: new Date().toISOString() },
+        status: "completed" as const,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    db.students = [...db.students.filter(s => !s.id.startsWith("std_mock")), ...dummyStudents];
+    await writeDb(db);
+    
+    return NextResponse.json({ message: 'Dummy data simulasi berhasil disuntikkan ke db.json!', count: dummyStudents.length });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+```
+
+#### 3. Rencana Pengiriman Data dari Wizard (`student/page.tsx`)
+
+Ubah fungsi penyimpanan akhir di langkah 6 untuk melakukan request API `fetch` asinkron:
+
+```typescript
+const handleFinalSubmit = async (fullData: any) => {
+  try {
+    const response = await fetch('/api/student/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fullData)
+    });
+
+    if (!response.ok) {
+      throw new Error("Gagal mengunggah data ke server.");
+    }
+
+    const resJson = await response.json();
+    console.log("Portofolio berhasil disimpan ke database flatfile server:", resJson);
+    
+    // Sebagai fallback keamanan cadangan, tetap simpan di localStorage
+    localStorage.setItem('ruangkarier_active_session', JSON.stringify(fullData));
+    
+    // Arahkan ke halaman portofolio siswa
+    router.push(`/portfolio/${fullData.id}`);
+  } catch (err) {
+    console.error("Terjadi kegagalan sinkronisasi database:", err);
+  }
+};
+```
 
 ---
 
